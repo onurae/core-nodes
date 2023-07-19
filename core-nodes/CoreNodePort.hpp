@@ -67,6 +67,7 @@ private:
 public:
     CoreNodeInput(const std::string& name, PortType type, PortDataType dataType, int order);
     virtual ~CoreNodeInput() = default;
+    void Save(pugi::xml_node& xmlNode) const;
 
     void SetName(std::string_view portName) { name = portName; }
     void SetType(PortDataType portDataType) { dataType = portDataType; }
@@ -119,6 +120,7 @@ private:
 public:
     CoreNodeOutput(const std::string& name, PortType type, PortDataType dataType, int order);
     virtual ~CoreNodeOutput() = default;
+    void Save(pugi::xml_node& xmlNode) const;
 
     void SetName(std::string_view portName) { name = portName; }
     void SetType(PortDataType portDataType) { dataType = portDataType; }

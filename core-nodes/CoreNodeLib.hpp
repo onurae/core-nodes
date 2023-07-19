@@ -10,10 +10,7 @@
 #ifndef CORENODELIB_HPP
 #define CORENODELIB_HPP
 
-#include "imgui.h"
-#include "imgui_internal.h"
-#include <string>
-#include <vector>
+#include "CoreUtility.hpp"
 
 enum class NodeType
 {

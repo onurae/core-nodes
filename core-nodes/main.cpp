@@ -72,16 +72,13 @@ public:
             ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
 
             ImGuiID dock_main_id = dockspace_id;
-            ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.20f, nullptr, &dock_main_id);
-            ImGuiID dock_id_left_bottom = ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 0.60f, nullptr, &dock_id_left);
-            ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, nullptr, &dock_main_id);
-            ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, nullptr, &dock_main_id);
+            ImGuiID dock_id_left_top = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.20f, nullptr, &dock_main_id);
+            ImGuiID dock_id_left_bottom = ImGui::DockBuilderSplitNode(dock_id_left_top, ImGuiDir_Down, 0.60f, nullptr, &dock_id_left_top);
 
-            ImGui::DockBuilderDockWindow("View_1", dock_id_left);
-            ImGui::DockBuilderDockWindow("View_2", dock_main_id);
-            ImGui::DockBuilderDockWindow("View_3", dock_id_right);
-            ImGui::DockBuilderDockWindow("View_4", dock_id_left_bottom);
-            ImGui::DockBuilderDockWindow("View_5", dock_id_bottom);
+            ImGui::DockBuilderDockWindow("Simulation", dock_id_left_top);
+            ImGui::DockBuilderDockWindow("Library", dock_id_left_top);
+            ImGui::DockBuilderDockWindow("Diagram", dock_main_id);
+            ImGui::DockBuilderDockWindow("Properties", dock_id_left_bottom);
             ImGui::DockBuilderFinish(dockspace_id);
         }
 
@@ -91,6 +88,45 @@ public:
 
         if (ImGui::BeginMenuBar())
         {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Save", nullptr, false, true))
+                {
+                    pugi::xml_document doc; auto declarationNode = doc.append_child(pugi::node_declaration);
+                    declarationNode.append_attribute("version") = "1.0";
+                    declarationNode.append_attribute("encoding") = "ISO-8859-1";
+                    declarationNode.append_attribute("standalone") = "yes";
+                    auto root = doc.append_child("core-nodes");
+                    root.append_attribute("version").set_value("v0.1.0");
+                    auto sim = root.append_child("simulation");
+                    sim.append_attribute("solver").set_value(1);
+                    sim.append_attribute("sampleTime").set_value(0.01);
+                    sim.append_attribute("stopTime").set_value(5.0);
+                    sim.append_attribute("speed").set_value("realTime");
+                    coreDiagram.Save(root);
+
+                    std::string filePath = "myModel.cono";
+                    bool saveSucceeded = doc.save_file(filePath.c_str(), PUGIXML_TEXT("  "));
+                }
+                if (ImGui::MenuItem("Load", nullptr, false, true))
+                {
+                    bool load = true;
+                    pugi::xml_document doc;
+                    std::string filePath = "myModel.cono";
+                    pugi::xml_parse_result result = doc.load_file(filePath.c_str(), pugi::parse_default | pugi::parse_declaration);
+                    if (result)
+                    {
+                        pugi::xml_node root = doc.document_element();
+                        // TODO check core-nodes version.
+                        coreDiagram.Load(root);
+                    }
+                    else
+                    {
+                        //Load Error.
+                    }
+                }
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu("View"))
             {
                 if (ImGui::MenuItem("Redock", nullptr, false, true))
@@ -108,24 +144,20 @@ public:
         }
         ImGui::End();
 
-        ImGui::Begin("View_1", nullptr, ImGuiWindowFlags_None);
+        ImGui::Begin("Simulation", nullptr, ImGuiWindowFlags_None);
         ImGui::Text("Text");
         ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
         ImGui::End();
 
-        ImGui::Begin("View_2", nullptr, ImGuiWindowFlags_None);
+        ImGui::Begin("Library", nullptr, ImGuiWindowFlags_None);
+        ImGui::Text("Text");
+        ImGui::End();
+
+        ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_None);
         coreDiagram.Update();
         ImGui::End();
 
-        ImGui::Begin("View_3", nullptr, ImGuiWindowFlags_None);
-        ImGui::Text("Text");
-        ImGui::End();
-
-        ImGui::Begin("View_4", nullptr, ImGuiWindowFlags_None);
-        ImGui::Text("Text");
-        ImGui::End();
-
-        ImGui::Begin("View_5", nullptr, ImGuiWindowFlags_None);
+        ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_None);
         ImGui::Text("Text");
         ImGui::End();
     }

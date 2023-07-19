@@ -28,6 +28,40 @@ void CoreDiagram::Update()
     Popups();
 }
 
+void CoreDiagram::Save(pugi::xml_node& xmlNode) const
+{
+    auto node = xmlNode.append_child("diagram");
+    SaveFloat(node, "scale", scale);
+    SaveImVec2(node, "scroll", scroll);
+
+    return; // TODO
+    for (const auto& element : coreNodeVec)
+    {
+        element->Save(node.append_child("nodeList"));
+    }
+}
+
+void CoreDiagram::Load(const pugi::xml_node& xmlNode)
+{
+    auto node = xmlNode.child("diagram");
+    state = State::Default;
+    scale = LoadFloat(node, "scale");
+    scroll = LoadImVec2(node, "scroll");
+    highlightedNode = nullptr;
+    hovNode = nullptr;
+    iNode = nullptr;
+    iNodeInput = nullptr;
+    iNodeOutput = nullptr;
+    inputFreeLink = ImVec2();
+    outputFreeLink = ImVec2();
+
+    // TODO how many nodes?
+    // Load them.
+
+    // TODO how many links
+    // Load them.
+}
+
 void CoreDiagram::Actions()
 {
     MouseMove();

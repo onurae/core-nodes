@@ -24,6 +24,48 @@ CoreNode::CoreNode(int id, const std::string& name, const std::string& libName, 
     colorBody = ImColor(0.0f, 0.0f, 0.0f, 0.75f);
 }
 
+void CoreNode::Save(pugi::xml_node& xmlNode) const
+{
+    auto node = xmlNode.append_child("node");
+    node.append_attribute("name") = name.c_str();
+    SaveInt(node, "id", id);
+    SaveString(node, "libName", libName);
+    SaveInt(node, "type", (int)type);
+    SaveImColor(node, "colorNode", colorNode);
+    SaveImColor(node, "colorHead", colorHead);
+    SaveImColor(node, "colorLine", colorLine);
+    SaveImColor(node, "colorBody", colorBody);
+    //SaveInt(node, "flagSet", flagSet.GetInt());
+    SaveImRect(node, "rectNode", rectNode);
+    SaveImRect(node, "rectNodeTitle", rectNodeTitle);
+    SaveImRect(node, "rectName", rectName);
+    SaveFloat(node, "titleHeight", titleHeight);
+    SaveFloat(node, "bodyHeight", bodyHeight);
+    SaveFloat(node, "kTitleHeight", kTitleHeight);
+    SaveFloat(node, "kHorizontal", kHorizontal);
+    SaveFloat(node, "kVerticalTop", kVerticalTop);
+    SaveFloat(node, "kVerticalBottom", kVerticalBottom);
+    auto inputList = node.append_child("inputList");
+    for (const auto& element : inputVec)
+    {
+        element.Save(inputList);
+    }
+    auto outputList = node.append_child("outputList");
+    for (const auto& element : outputVec)
+    {
+        element.Save(outputList);
+    }
+    SaveImVec2(node, "leftPortPos", leftPortPos);
+    SaveImVec2(node, "rightPortPos", rightPortPos);
+    SaveBool(node, "portInverted", portInverted);
+}
+
+void CoreNode::Load(const pugi::xml_node& xmlNode)
+{
+    id = xmlNode.child("id").attribute("data").as_int();
+    libName = xmlNode.child("libName").attribute("data").as_string();
+}
+
 void CoreNode::Translate(ImVec2 delta, bool selectedOnly)
 {
     if (selectedOnly && (flagSet.HasAnyFlag(NodeFlag::Selected) == false))

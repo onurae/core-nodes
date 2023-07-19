@@ -27,6 +27,48 @@ CoreNodeInput::CoreNodeInput(const std::string& name, PortType type, PortDataTyp
     rectPort.Translate(offset);
 }
 
+void CoreNodeInput::Save(pugi::xml_node& xmlNode) const
+{
+    auto node = xmlNode.append_child("input");
+    node.append_attribute("name").set_value(name.c_str());
+    SaveImVec2(node, "position", position);
+    SaveFloat(node, "ref", ref);
+    SaveImRect(node, "rectName", rectName);
+    SaveImRect(node, "rectPin", rectPin);
+    SaveImRect(node, "rectPort", rectPort);
+    SaveFloat(node, "kPin", kPin);
+    SaveFloat(node, "kPadding", kPadding);
+    SaveFloat(node, "kHeight", kHeight);
+    SaveInt(node, "type", (int)type);
+    SaveInt(node, "dataType", (int)dataType);
+    SaveInt(node, "order", order);
+    //SaveInt(node, "flagSet", flagSet.GetInt());
+
+    /*
+    ImVec2 position;
+    float ref;
+    ImRect rectName;
+    ImRect rectPin;
+    ImRect rectPort;
+    float kPin{ 0.6f };
+    float kPadding{ 0.25f };
+    float kHeight{ 1.25f };
+    std::string name;
+    PortType type;
+    PortDataType dataType;
+    int order;
+    FlagSet flagSet;
+    CoreNode* targetNode{ nullptr };
+    CoreNodeOutput* targetNodeOutput{ nullptr };
+    bool inverted = false;
+    int linkDir = 0;        // direction of the input on the y axis {-1, 0, 1}. +1:downwards.
+    int linkSepX = 0;       // seperation coeff. for the horizontal axis.
+    int linkSepY = 0;       // seperation coeff. for the vertical axis (between nodes).
+    int targetLinkDir = 0;  // direction of the linked output.
+    int targetLinkSep = 0;  // seperation coeff. of the linked output.
+    */
+}
+
 void CoreNodeInput::BreakLink()
 {
     if (targetNodeOutput != nullptr)
@@ -191,6 +233,25 @@ CoreNodeOutput::CoreNodeOutput(const std::string& name, PortType type, PortDataT
     rectPin.Translate(offset);
     rectPort.Translate(offset);
     rectName.Translate(offset);
+}
+
+void CoreNodeOutput::Save(pugi::xml_node & xmlNode) const
+{
+    /*    ImVec2 position;
+    float ref;
+    ImRect rectName;
+    ImRect rectPin;
+    ImRect rectPort;
+    float kPin{ 0.6f };
+    float kPadding{ 0.25f };
+    float kHeight{ 1.25f };
+    std::string name;
+    PortType type;
+    PortDataType dataType;
+    int order;
+    FlagSet flagSet;
+    int linkNum{ 0 };
+    bool inverted = false;*/
 }
 
 void CoreNodeOutput::Translate(ImVec2 delta)

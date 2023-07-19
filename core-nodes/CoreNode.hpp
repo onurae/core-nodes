@@ -53,6 +53,8 @@ private:
 public:
     CoreNode(int id, const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
     virtual ~CoreNode() = default;
+    void Save(pugi::xml_node& xmlNode) const;
+    void Load(const pugi::xml_node& xmlNode);
 
     std::string GetName() const { return name; }
     NodeType GetType() const { return type; };

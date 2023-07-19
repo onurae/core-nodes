@@ -33,6 +33,8 @@ public:
     CoreDiagram() = default;
     virtual ~CoreDiagram();
     void Update();
+    void Save(pugi::xml_node& xmlNode) const;
+    void Load(const pugi::xml_node& xmlNode);
 
 private:
     CoreNodeLib coreNodeLib;
