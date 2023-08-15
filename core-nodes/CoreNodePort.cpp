@@ -40,10 +40,6 @@ void CoreNodeInput::Save(pugi::xml_node& xmlNode) const
     SaveInt(node, "dataType", (int)dataType);
     SaveInt(node, "order", order);
     SaveInt(node, "flagSet", flagSet.GetInt());
-    /*
-    CoreNode* targetNode{ nullptr };
-    CoreNodeOutput* targetNodeOutput{ nullptr };
-    */
     SaveBool(node, "inverted", inverted);
     SaveInt(node, "linkDir", linkDir);
     SaveInt(node, "linkSepX", linkSepX);
@@ -64,10 +60,6 @@ void CoreNodeInput::Load(const pugi::xml_node & xmlNode)
     dataType = (PortDataType)LoadInt(xmlNode, "dataType");
     order = LoadInt(xmlNode, "order");
     flagSet.SetInt(LoadInt(xmlNode, "flagSet"));
-    /*
-    CoreNode* targetNode{ nullptr };
-    CoreNodeOutput* targetNodeOutput{ nullptr };
-    */
     inverted = LoadBool(xmlNode, "inverted");
     linkDir = LoadInt(xmlNode, "linkDir");
     linkSepX = LoadInt(xmlNode, "linkSepX");

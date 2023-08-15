@@ -38,7 +38,11 @@ void CoreDiagram::Save(pugi::xml_node& xmlNode) const
     {
         element->Save(nodeList);
     }
-    // TODO save links.
+    auto linkList = node.append_child("linkList");
+    for (const auto& element : linkVec)
+    {
+        element.Save(linkList);
+    }
 }
 
 void CoreDiagram::Load(const pugi::xml_node& xmlNode)
@@ -61,8 +65,36 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
         coreNodeVec.emplace_back(new CoreNode());
         coreNodeVec.back()->Load(element);
     }
-    // TODO how many links
-    // Load them.
+    for (const auto& element : node.child("linkList").children("link"))
+    {
+        linkVec.emplace_back();
+        linkVec.back().Load(element);
+
+        // Match pointers
+        auto inputNodeName = LoadString(element, "inputNode");
+        auto outputNodeName = LoadString(element, "outputNode");
+        auto inputPortOrder = LoadInt(element, "inputPort");
+        auto outputPortOrder = LoadInt(element, "outputPort");
+        for (auto coreNode : coreNodeVec)
+        {
+            auto coreName = coreNode->GetName();
+            if (coreName == inputNodeName)
+            {
+                linkVec.back().inputNode = coreNode;
+                linkVec.back().inputPort = &(coreNode->GetInputVec().at(inputPortOrder));
+            }
+            if (coreName == outputNodeName)
+            {
+                linkVec.back().outputNode = coreNode;
+                linkVec.back().outputPort = &(coreNode->GetOutputVec().at(outputPortOrder));
+            }
+        }
+        for (auto& link : linkVec)
+        {
+            link.inputPort->SetTargetNode(link.outputNode);
+            link.inputPort->SetTargetNodeOutput(link.outputPort);
+        }
+    }
 }
 
 void CoreDiagram::Actions()
