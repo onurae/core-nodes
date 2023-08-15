@@ -41,16 +41,17 @@ private:
     ImRect rectName;
     float titleHeight{ 0.0f };
     float bodyHeight{ 0.0f };
-    float kTitleHeight{ 1.8f };
-    float kHorizontal{ 1.7f };
-    float kVerticalTop{ 0.50f };
-    float kVerticalBottom{ 0.50f };
+    const float kTitleHeight{ 1.8f };
+    const float kHorizontal{ 1.7f };
+    const float kVerticalTop{ 0.50f };
+    const float kVerticalBottom{ 0.50f };
     std::vector<CoreNodeInput> inputVec;
     std::vector<CoreNodeOutput> outputVec;
     ImVec2 leftPortPos;
     ImVec2 rightPortPos;
     bool portInverted = false;
 public:
+    CoreNode() = default;
     CoreNode(int id, const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
     virtual ~CoreNode() = default;
     void Save(pugi::xml_node& xmlNode) const;

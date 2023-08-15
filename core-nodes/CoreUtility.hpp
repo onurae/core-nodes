@@ -24,7 +24,12 @@ void SaveString(pugi::xml_node& xmlNode, const std::string& name, const std::str
 void SaveInt(pugi::xml_node& xmlNode, const std::string& name, int i);
 void SaveBool(pugi::xml_node& xmlNode, const std::string& name, bool b);
 
+ImRect LoadImRect(const pugi::xml_node& xmlNode, const std::string& name);
 ImVec2 LoadImVec2(const pugi::xml_node& xmlNode, const std::string& name);
+ImColor LoadImColor(const pugi::xml_node& xmlNode, const std::string& name);
 float LoadFloat(const pugi::xml_node& xmlNode, const std::string& name);
+std::string LoadString(const pugi::xml_node& xmlNode, const std::string& name);
+int LoadInt(const pugi::xml_node& xmlNode, const std::string& name);
+bool LoadBool(const pugi::xml_node& xmlNode, const std::string& name);
 
 #endif /* COREUTILITY_HPP */

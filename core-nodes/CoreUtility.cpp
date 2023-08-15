@@ -48,6 +48,13 @@ void SaveBool(pugi::xml_node& xmlNode, const std::string& name, bool b)
     xmlNode.append_child(name.c_str()).append_attribute("data").set_value(b);
 }
 
+ImRect LoadImRect(const pugi::xml_node & xmlNode, const std::string & name)
+{
+    auto min = ImVec2(xmlNode.child(name.c_str()).attribute("xMin").as_float(), xmlNode.child(name.c_str()).attribute("yMin").as_float());
+    auto max = ImVec2(xmlNode.child(name.c_str()).attribute("xMax").as_float(), xmlNode.child(name.c_str()).attribute("yMax").as_float());
+    return ImRect(min, max);
+}
+
 ImVec2 LoadImVec2(const pugi::xml_node & xmlNode, const std::string & name)
 {
     float x = xmlNode.child(name.c_str()).attribute("x").as_float();
@@ -55,7 +62,31 @@ ImVec2 LoadImVec2(const pugi::xml_node & xmlNode, const std::string & name)
     return ImVec2(x, y);
 }
 
+ImColor LoadImColor(const pugi::xml_node & xmlNode, const std::string & name)
+{
+    float r = xmlNode.child(name.c_str()).attribute("x").as_float();
+    float g = xmlNode.child(name.c_str()).attribute("y").as_float();
+    float b = xmlNode.child(name.c_str()).attribute("z").as_float();
+    float a = xmlNode.child(name.c_str()).attribute("w").as_float();
+    return ImColor(r, g, b, a);
+}
+
 float LoadFloat(const pugi::xml_node & xmlNode, const std::string & name)
 {
     return xmlNode.child(name.c_str()).attribute("data").as_float();
+}
+
+std::string LoadString(const pugi::xml_node & xmlNode, const std::string & name)
+{
+    return xmlNode.child(name.c_str()).attribute("data").as_string();
+}
+
+int LoadInt(const pugi::xml_node & xmlNode, const std::string & name)
+{
+    return xmlNode.child(name.c_str()).attribute("data").as_int();
+}
+
+bool LoadBool(const pugi::xml_node & xmlNode, const std::string & name)
+{
+    return xmlNode.child(name.c_str()).attribute("data").as_bool();
 }

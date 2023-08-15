@@ -33,12 +33,12 @@ void CoreDiagram::Save(pugi::xml_node& xmlNode) const
     auto node = xmlNode.append_child("diagram");
     SaveFloat(node, "scale", scale);
     SaveImVec2(node, "scroll", scroll);
-
-    return; // TODO
+    auto nodeList = node.append_child("nodeList");
     for (const auto& element : coreNodeVec)
     {
-        element->Save(node.append_child("nodeList"));
+        element->Save(nodeList);
     }
+    // TODO save links.
 }
 
 void CoreDiagram::Load(const pugi::xml_node& xmlNode)
@@ -52,12 +52,15 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
     iNode = nullptr;
     iNodeInput = nullptr;
     iNodeOutput = nullptr;
+    rectCanvas = ImRect();
+    rectSelecting = ImRect();
     inputFreeLink = ImVec2();
     outputFreeLink = ImVec2();
-
-    // TODO how many nodes?
-    // Load them.
-
+    for (const auto& element : node.child("nodeList").children("node"))
+    {
+        coreNodeVec.emplace_back(new CoreNode());
+        coreNodeVec.back()->Load(element);
+    }
     // TODO how many links
     // Load them.
 }

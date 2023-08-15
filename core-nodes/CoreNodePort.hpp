@@ -26,6 +26,8 @@ public:
     bool HasAnyFlag(unsigned int multiFlag) const { return (flags & multiFlag) != 0; }
     bool Equal(unsigned int multiFlag) const { return flags == multiFlag; }
     std::string Get() const { return std::bitset<8 * sizeof(flags)>(flags).to_string(); }
+    int GetInt() const { return (int)flags; }
+    void SetInt(int argFlags) { flags = argFlags; }
 };
 
 struct PortFlag
@@ -48,9 +50,9 @@ private:
     ImRect rectName;
     ImRect rectPin;
     ImRect rectPort;
-    float kPin{ 0.6f };
-    float kPadding{ 0.25f };
-    float kHeight{ 1.25f };
+    const float kPin{ 0.6f };
+    const float kPadding{ 0.25f };
+    const float kHeight{ 1.25f };
     std::string name;
     PortType type;
     PortDataType dataType;
@@ -65,12 +67,12 @@ private:
     int targetLinkDir = 0;  // direction of the linked output.
     int targetLinkSep = 0;  // seperation coeff. of the linked output.
 public:
+    CoreNodeInput() = default;
     CoreNodeInput(const std::string& name, PortType type, PortDataType dataType, int order);
     virtual ~CoreNodeInput() = default;
     void Save(pugi::xml_node& xmlNode) const;
+    void Load(const pugi::xml_node& xmlNode);
 
-    void SetName(std::string_view portName) { name = portName; }
-    void SetType(PortDataType portDataType) { dataType = portDataType; }
     std::string GetName() const { return name; }
     PortType GetType() const { return type; };
     PortDataType GetDataType() const { return dataType; };
@@ -107,9 +109,9 @@ private:
     ImRect rectName;
     ImRect rectPin;
     ImRect rectPort;
-    float kPin{ 0.6f };
-    float kPadding{ 0.25f };
-    float kHeight{ 1.25f };
+    const float kPin{ 0.6f };
+    const float kPadding{ 0.25f };
+    const float kHeight{ 1.25f };
     std::string name;
     PortType type;
     PortDataType dataType;
@@ -118,12 +120,12 @@ private:
     int linkNum{ 0 };
     bool inverted = false;
 public:
+    CoreNodeOutput() = default;
     CoreNodeOutput(const std::string& name, PortType type, PortDataType dataType, int order);
     virtual ~CoreNodeOutput() = default;
     void Save(pugi::xml_node& xmlNode) const;
+    void Load(const pugi::xml_node& xmlNode);
 
-    void SetName(std::string_view portName) { name = portName; }
-    void SetType(PortDataType portDataType) { dataType = portDataType; }
     std::string GetName() const { return name; }
     PortType GetType() const { return type; };
     PortDataType GetDataType() const { return dataType; };

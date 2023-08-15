@@ -35,16 +35,12 @@ void CoreNode::Save(pugi::xml_node& xmlNode) const
     SaveImColor(node, "colorHead", colorHead);
     SaveImColor(node, "colorLine", colorLine);
     SaveImColor(node, "colorBody", colorBody);
-    //SaveInt(node, "flagSet", flagSet.GetInt());
+    SaveInt(node, "flagSet", flagSet.GetInt());
     SaveImRect(node, "rectNode", rectNode);
     SaveImRect(node, "rectNodeTitle", rectNodeTitle);
     SaveImRect(node, "rectName", rectName);
     SaveFloat(node, "titleHeight", titleHeight);
     SaveFloat(node, "bodyHeight", bodyHeight);
-    SaveFloat(node, "kTitleHeight", kTitleHeight);
-    SaveFloat(node, "kHorizontal", kHorizontal);
-    SaveFloat(node, "kVerticalTop", kVerticalTop);
-    SaveFloat(node, "kVerticalBottom", kVerticalBottom);
     auto inputList = node.append_child("inputList");
     for (const auto& element : inputVec)
     {
@@ -62,8 +58,35 @@ void CoreNode::Save(pugi::xml_node& xmlNode) const
 
 void CoreNode::Load(const pugi::xml_node& xmlNode)
 {
-    id = xmlNode.child("id").attribute("data").as_int();
-    libName = xmlNode.child("libName").attribute("data").as_string();
+    id = LoadInt(xmlNode, "id");
+    name = xmlNode.attribute("name").as_string();
+    libName = LoadString(xmlNode, "libName");
+    type = (NodeType)LoadInt(xmlNode, "type");
+    colorNode = LoadImColor(xmlNode, "colorNode");
+    colorHead = LoadImColor(xmlNode, "colorHead");
+    colorLine = LoadImColor(xmlNode, "colorLine");
+    colorBody = LoadImColor(xmlNode, "colorBody");
+    flagSet.SetInt(LoadInt(xmlNode, "flagSet"));
+    flagSet.UnsetFlag(NodeFlag::Highlighted);   // Unset highlighted flag.
+    flagSet.UnsetFlag(NodeFlag::Hovered);       // Unset hovered flag.
+    rectNode = LoadImRect(xmlNode, "rectNode");
+    rectNodeTitle = LoadImRect(xmlNode, "rectNodeTitle");
+    rectName = LoadImRect(xmlNode, "rectName");
+    titleHeight = LoadFloat(xmlNode, "titleHeight");
+    bodyHeight = LoadFloat(xmlNode, "bodyHeight");
+    for (const auto& element : xmlNode.child("inputList").children("input"))
+    {
+        inputVec.emplace_back();
+        inputVec.back().Load(element);
+    }
+    for (const auto& element : xmlNode.child("outputList").children("output"))
+    {
+        outputVec.emplace_back();
+        outputVec.back().Load(element);
+    }
+    leftPortPos = LoadImVec2(xmlNode, "leftPortPos");
+    rightPortPos = LoadImVec2(xmlNode, "rightPortPos");
+    portInverted = LoadBool(xmlNode, "portInverted");
 }
 
 void CoreNode::Translate(ImVec2 delta, bool selectedOnly)

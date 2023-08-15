@@ -13,7 +13,10 @@
 class MyApp : public GuiApp
 {
 public:
-    MyApp() : GuiApp("MyApp") {};
+    MyApp() : GuiApp("MyApp")
+    {
+        coreDiagram = std::make_unique<CoreDiagram>();
+    };
     ~MyApp() final = default;
 
     void Update() override
@@ -103,7 +106,7 @@ public:
                     sim.append_attribute("sampleTime").set_value(0.01);
                     sim.append_attribute("stopTime").set_value(5.0);
                     sim.append_attribute("speed").set_value("realTime");
-                    coreDiagram.Save(root);
+                    coreDiagram->Save(root);
 
                     std::string filePath = "myModel.cono";
                     bool saveSucceeded = doc.save_file(filePath.c_str(), PUGIXML_TEXT("  "));
@@ -118,7 +121,9 @@ public:
                     {
                         pugi::xml_node root = doc.document_element();
                         // TODO check core-nodes version.
-                        coreDiagram.Load(root);
+                        // TODO want to save the current project?
+                        coreDiagram = std::make_unique<CoreDiagram>();
+                        coreDiagram->Load(root);
                     }
                     else
                     {
@@ -154,7 +159,7 @@ public:
         ImGui::End();
 
         ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_None);
-        coreDiagram.Update();
+        coreDiagram->Update();
         ImGui::End();
 
         ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_None);
@@ -166,7 +171,7 @@ private:
     bool open = true;
     bool redock = false;
 
-    CoreDiagram coreDiagram;
+    std::unique_ptr<CoreDiagram> coreDiagram;
 };
 
 int main()
