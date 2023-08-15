@@ -10,14 +10,14 @@
 #include "gui-app-template/GuiApp.hpp"
 #include "CoreDiagram.hpp"
 
-class MyApp : public GuiApp
+class CoreNodes : public GuiApp
 {
 public:
-    MyApp() : GuiApp("MyApp")
+    CoreNodes() : GuiApp("MyApp")
     {
         coreDiagram = std::make_unique<CoreDiagram>();
     };
-    ~MyApp() final = default;
+    ~CoreNodes() final = default;
 
     void Update() override
     {
@@ -93,6 +93,11 @@ public:
         {
             if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("New", nullptr, false, true))
+                {
+                    // TODO want to save the current project?
+                    coreDiagram = std::make_unique<CoreDiagram>();
+                }
                 if (ImGui::MenuItem("Save", nullptr, false, true))
                 {
                     pugi::xml_document doc; auto declarationNode = doc.append_child(pugi::node_declaration);
@@ -176,7 +181,7 @@ private:
 
 int main()
 {
-    MyApp myApp;
-    myApp.Run();
+    CoreNodes coreNodes;
+    coreNodes.Run();
     return 0;
 }
