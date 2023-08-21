@@ -9,12 +9,14 @@
 
 #include "gui-app-template/GuiApp.hpp"
 #include "CoreDiagram.hpp"
+#include <memory>
 
 class CoreNodes : public GuiApp
 {
 public:
-    CoreNodes() : GuiApp("MyApp")
+    CoreNodes() : GuiApp("CoreNodes")
     {
+        SetTitle("Untitled", false);
         coreDiagram = std::make_unique<CoreDiagram>();
     };
     ~CoreNodes() final = default;
@@ -95,6 +97,7 @@ public:
             {
                 if (ImGui::MenuItem("New", nullptr, false, true))
                 {
+                    SetTitle("Untitled", true);
                     // TODO want to save the current project?
                     coreDiagram = std::make_unique<CoreDiagram>();
                 }
@@ -115,6 +118,10 @@ public:
 
                     std::string filePath = "myModel.cono";
                     bool saveSucceeded = doc.save_file(filePath.c_str(), PUGIXML_TEXT("  "));
+                    if (saveSucceeded)
+                    {
+                        SetTitle("Untitled", false);
+                    }
                 }
                 if (ImGui::MenuItem("Load", nullptr, false, true))
                 {
@@ -134,6 +141,12 @@ public:
                     {
                         //Load Error.
                     }
+                }
+                if (ImGui::MenuItem("SaveAs", nullptr, false, true))
+                {
+                    // name
+                    SetTitle("asdasd", false);
+                    // call save with a new name.
                 }
                 ImGui::EndMenu();
             }

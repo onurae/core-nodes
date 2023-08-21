@@ -13,7 +13,7 @@ include(FetchContent)
 FetchContent_Populate(
     gui-app-template
     GIT_REPOSITORY https://github.com/onurae/gui-app-template.git
-    GIT_TAG main
+    GIT_TAG 5e03a3347adb4d8c55bd8c6090c0a75dfea065a3 # release-0.2.0
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/libs/gui-app-template
 )
 
