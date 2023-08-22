@@ -143,10 +143,16 @@ void CoreDiagram::MouseMove()
                      (state == State::HoveringInput) || (state == State::HoveringOutput);
     if (condition == true)
     {
-        if (hovNode == nullptr)
+        if (ImGui::IsWindowHovered() == false)
         {
-            ImRect canvas(position, position + size);
-            state = (canvas.Contains(mousePos) == true) ? State::Default : State::None;
+            state = State::None;
+            iNode = nullptr;
+            iNodeInput = nullptr;
+            iNodeOutput = nullptr;
+        }
+        else if (hovNode == nullptr)
+        {
+            state = State::Default;
             iNode = nullptr;
             iNodeInput = nullptr;
             iNodeOutput = nullptr;
@@ -457,7 +463,7 @@ void CoreDiagram::MouseRightButtonRelease()
 {
     // Open menu, temporary.
     const ImGuiIO& io = ImGui::GetIO();
-    if (rectCanvas.Contains(mousePos) && ImGui::IsMouseDown(0) == false && ImGui::IsMouseReleased(1) && iNode == nullptr)
+    if (state != State::None && rectCanvas.Contains(mousePos) && ImGui::IsMouseDown(0) == false && ImGui::IsMouseReleased(1) && iNode == nullptr)
     {
         if (io.MouseDragMaxDistanceSqr[1] < (io.MouseDragThreshold * io.MouseDragThreshold))
         {
@@ -673,7 +679,7 @@ void CoreDiagram::UpdateCanvasScrollZoom()
 {
     const ImGuiIO& io = ImGui::GetIO();
     bool dragCond = state == State::DragingInput || state == State::DragingOutput;
-    if ((ImGui::IsMouseDown(0) == false || dragCond) && rectCanvas.Contains(mousePos))
+    if (state != State::None && (ImGui::IsMouseDown(0) == false || dragCond) && rectCanvas.Contains(mousePos))
     {
         if (ImGui::IsKeyPressed(ImGuiKey_Space))
         {
@@ -781,7 +787,8 @@ void CoreDiagram::UpdateNodeFlags()
         }
 
         // Hovered Node Condition
-        if (hovNode == nullptr && (nodeArea.Contains(mousePos) || inputArea.Contains(mousePos) || outputArea.Contains(mousePos)))
+        if (state != State::None && hovNode == nullptr &&
+            (nodeArea.Contains(mousePos) || inputArea.Contains(mousePos) || outputArea.Contains(mousePos)))
         {
             hovNode = node;
             hovNode->GetFlagSet().SetFlag(NodeFlag::Hovered);
@@ -858,7 +865,7 @@ void CoreDiagram::UpdateInputFlags(CoreNode* node)
         inputRect.Max *= scale;
         ImVec2 offset = position + scroll;
         inputRect.Translate(offset);
-        if (inputRect.Contains(mousePos))
+        if (state != State::None && inputRect.Contains(mousePos))
         {
             if (state != State::DragingOutput)
             {
@@ -926,7 +933,7 @@ void CoreDiagram::UpdateOutputFlags(CoreNode* node)
         outputRect.Max *= scale;
         ImVec2 offset = position + scroll;
         outputRect.Translate(offset);
-        if (outputRect.Contains(mousePos))
+        if (state != State::None && outputRect.Contains(mousePos))
         {
             if (state != State::DragingInput)
             {

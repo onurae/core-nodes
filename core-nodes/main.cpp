@@ -103,44 +103,17 @@ public:
                 }
                 if (ImGui::MenuItem("Save", nullptr, false, true))
                 {
-                    pugi::xml_document doc; auto declarationNode = doc.append_child(pugi::node_declaration);
-                    declarationNode.append_attribute("version") = "1.0";
-                    declarationNode.append_attribute("encoding") = "ISO-8859-1";
-                    declarationNode.append_attribute("standalone") = "yes";
-                    auto root = doc.append_child("core-nodes");
-                    root.append_attribute("version").set_value("v0.1.0");
-                    auto sim = root.append_child("simulation");
-                    sim.append_attribute("solver").set_value(1);
-                    sim.append_attribute("sampleTime").set_value(0.01);
-                    sim.append_attribute("stopTime").set_value(5.0);
-                    sim.append_attribute("speed").set_value("realTime");
-                    coreDiagram->Save(root);
-
-                    std::string filePath = "myModel.cono";
-                    bool saveSucceeded = doc.save_file(filePath.c_str(), PUGIXML_TEXT("  "));
-                    if (saveSucceeded)
-                    {
-                        SetTitle("Untitled", false);
-                    }
+                    fileDialogOpen = true;
+                    fileDialog.SetType(FileDialog::Type::SAVE);
+                    fileDialog.SetFileName("untitled");
+                    fileDialog.SetDirectory(std::filesystem::current_path());
                 }
-                if (ImGui::MenuItem("Load", nullptr, false, true))
+                if (ImGui::MenuItem("Open", nullptr, false, true))
                 {
-                    bool load = true;
-                    pugi::xml_document doc;
-                    std::string filePath = "myModel.cono";
-                    pugi::xml_parse_result result = doc.load_file(filePath.c_str(), pugi::parse_default | pugi::parse_declaration);
-                    if (result)
-                    {
-                        pugi::xml_node root = doc.document_element();
-                        // TODO check core-nodes version.
-                        // TODO want to save the current project?
-                        coreDiagram = std::make_unique<CoreDiagram>();
-                        coreDiagram->Load(root);
-                    }
-                    else
-                    {
-                        //Load Error.
-                    }
+                    fileDialogOpen = true;
+                    fileDialog.SetType(FileDialog::Type::OPEN);
+                    fileDialog.SetFileName("untitled.cn");
+                    fileDialog.SetDirectory(std::filesystem::current_path());
                 }
                 if (ImGui::MenuItem("SaveAs", nullptr, false, true))
                 {
@@ -183,13 +156,61 @@ public:
         ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_None);
         ImGui::Text("Text");
         ImGui::End();
+
+        if (fileDialog.Draw(&fileDialogOpen))
+        {
+            filePath = fileDialog.GetResultPath().string();
+            if (fileDialog.GetType() == FileDialog::Type::OPEN)
+            {
+                pugi::xml_document doc;
+                pugi::xml_parse_result result = doc.load_file(filePath.c_str(), pugi::parse_default | pugi::parse_declaration);
+                if (result)
+                {
+                    pugi::xml_node root = doc.document_element();
+                    // TODO check core-nodes version.
+                    // TODO want to save the current project?
+                    coreDiagram = std::make_unique<CoreDiagram>();
+                    coreDiagram->Load(root);
+                }
+                else
+                {
+                    //Load Error.
+                }
+            }
+            else if (fileDialog.GetType() == FileDialog::Type::SAVE)
+            {
+                pugi::xml_document doc; auto declarationNode = doc.append_child(pugi::node_declaration);
+                declarationNode.append_attribute("version") = "1.0";
+                declarationNode.append_attribute("encoding") = "ISO-8859-1";
+                declarationNode.append_attribute("standalone") = "yes";
+
+                auto root = doc.append_child("core-nodes");
+                root.append_attribute("version").set_value("v0.1.0");
+                auto sim = root.append_child("simulation");
+                sim.append_attribute("solver").set_value(1);
+                sim.append_attribute("sampleTime").set_value(0.01);
+                sim.append_attribute("stopTime").set_value(5.0);
+                sim.append_attribute("speed").set_value("realTime");
+                coreDiagram->Save(root);
+
+                std::string filePath = "untitled.cn";
+                bool saveSucceeded = doc.save_file(filePath.c_str(), PUGIXML_TEXT("  "));
+                if (saveSucceeded)
+                {
+                    SetTitle("Untitled", false);
+                }
+            }
+        }
     }
 
 private:
     bool open = true;
     bool redock = false;
+    bool fileDialogOpen = false;
 
     std::unique_ptr<CoreDiagram> coreDiagram;
+    FileDialog fileDialog;
+    std::string filePath;
 };
 
 int main()

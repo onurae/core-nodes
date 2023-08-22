@@ -10,7 +10,7 @@
 #ifndef CORENODELIB_HPP
 #define CORENODELIB_HPP
 
-#include "CoreUtility.hpp"
+#include "FileDialog.hpp"
 
 enum class NodeType
 {

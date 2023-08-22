@@ -1,20 +1,53 @@
-/******************************************************************************************
+﻿/******************************************************************************************
 *                                                                                         *
-*    Core Utility                                                                         *
+*    File Dialog                                                                          *
 *                                                                                         *
 *    Copyright (c) 2023 Onur AKIN <https://github.com/onurae>                             *
 *    Licensed under the MIT License.                                                      *
 *                                                                                         *
 ******************************************************************************************/
 
-#ifndef COREUTILITY_HPP
-#define COREUTILITY_HPP
+#ifndef FILEDIALOG_HPP
+#define FILEDIALOG_HPP
 
-#include "pugixml.hpp"
+#include <filesystem>
 #include "imgui.h"
 #include "imgui_internal.h"
-#include <string>
-#include <vector>
+#include "pugixml.hpp"
+
+class FileDialog
+{
+public:
+    enum class Type
+    {
+        SAVE_AS,
+        SAVE,
+        OPEN
+    };
+private:
+    Type type = Type::OPEN;
+    std::filesystem::path fileName;
+    std::filesystem::path directoryPath;
+    std::filesystem::path resultPath;
+    bool refresh;
+    size_t currentIndex;
+    std::vector<std::filesystem::directory_entry> currentFiles;
+    std::vector<std::filesystem::directory_entry> currentDirectories;
+    std::string title{ "" };
+    static const size_t bufferSize = 200;
+    char buffer[bufferSize];
+
+public:
+    FileDialog() = default;
+    virtual ~FileDialog() = default;
+
+    void SetType(Type t) { type = t; }
+    void SetFileName(std::string_view name) { fileName = name; }
+    void SetDirectory(const std::filesystem::path& dir) { directoryPath = dir; }
+    std::filesystem::path GetResultPath() const { return resultPath; }
+    Type GetType() const { return type; }
+    bool Draw(bool* open);
+};
 
 void SaveImRect(pugi::xml_node& xmlNode, const std::string& name, const ImRect& rect);
 void SaveImVec2(pugi::xml_node& xmlNode, const std::string& name, const ImVec2& vec);
@@ -32,4 +65,4 @@ std::string LoadString(const pugi::xml_node& xmlNode, const std::string& name);
 int LoadInt(const pugi::xml_node& xmlNode, const std::string& name);
 bool LoadBool(const pugi::xml_node& xmlNode, const std::string& name);
 
-#endif /* COREUTILITY_HPP */
+#endif /* FILEDIALOG_HPP */
