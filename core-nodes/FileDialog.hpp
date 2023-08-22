@@ -20,8 +20,8 @@ class FileDialog
 public:
     enum class Type
     {
-        SAVE_AS,
-        SAVE,
+        SAVEAS,
+        NEWSAVE,
         OPEN
     };
 private:
@@ -45,6 +45,7 @@ public:
     void SetFileName(std::string_view name) { fileName = name; }
     void SetDirectory(const std::filesystem::path& dir) { directoryPath = dir; }
     std::filesystem::path GetResultPath() const { return resultPath; }
+    auto GetFileName() const { return fileName; }
     Type GetType() const { return type; }
     bool Draw(bool* open);
 };
