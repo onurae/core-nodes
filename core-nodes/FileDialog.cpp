@@ -109,19 +109,53 @@ bool FileDialog::Draw(bool* open)
             currentDirectories.clear();
             *open = false;
         }
-
         ImGui::SameLine();
-        if (std::string buttonName = (type == Type::OPEN) ? "Open" : "Save"; ImGui::Button(buttonName.c_str()))
+        resultPath = directoryPath / fileName;
+        if (type == Type::OPEN)
         {
-            resultPath = directoryPath / fileName;
-            if ((type == Type::OPEN) ? std::filesystem::exists(resultPath) : !std::filesystem::exists(resultPath))
+            if (ImGui::Button("Open"))
             {
-                refresh = false;
-                currentIndex = 0;
-                currentFiles.clear();
-                currentDirectories.clear();
-                done = true;
-                *open = false;
+                if (std::filesystem::exists(resultPath) && fileName.string().rfind(".") != std::string::npos
+                    && fileName.string().substr(fileName.string().rfind(".")) == fileFormat)
+                {
+                    refresh = false;
+                    currentIndex = 0;
+                    currentFiles.clear();
+                    currentDirectories.clear();
+                    done = true;
+                    *open = false;
+                }
+                else
+                {
+                    // no found notif.
+                }
+            }
+        }
+        else if (type == Type::SAVE)
+        {
+            if (auto dot = fileName.string().rfind("."); dot == std::string::npos)
+            {
+                resultPath = resultPath.string() + fileFormat;
+            }
+            else if(fileName.string().substr(dot) != fileFormat)
+            {
+                resultPath = resultPath.string() + fileFormat;
+            }
+            if (ImGui::Button("Save"))
+            {
+                if (std::filesystem::exists(resultPath) == false)
+                {
+                    refresh = false;
+                    currentIndex = 0;
+                    currentFiles.clear();
+                    currentDirectories.clear();
+                    done = true;
+                    *open = false;
+                }
+                else
+                {
+                    // Override popup?
+                }
             }
         }
     }

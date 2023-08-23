@@ -13,7 +13,7 @@ void MyApp::Update()
 {
     //TestBasic();
     Dockspace();
-    FileNewOpenSave();
+    DrawFileDialog();
 }
 
 MyApp::MyApp() : GuiApp("MyApp")
@@ -89,154 +89,142 @@ void MyApp::Menu()
 {
     if (ImGui::BeginMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("New", nullptr, false, true))
-            {
-                SetTitle("new", true);
-                newFile = true;
-                // TODO want to save the current project?
-                coreDiagram = std::make_unique<CoreDiagram>();
-            }
-            if (ImGui::MenuItem("Open", nullptr, false, true))
-            {
-                fileDialogOpen = true;
-                fileDialog.SetType(FileDialog::Type::OPEN);
-                fileDialog.SetFileName("untitled.cn");
-                fileDialog.SetDirectory(std::filesystem::current_path());
-            }
-            if (ImGui::MenuItem("Save", nullptr, false, true))
-            {
-                if (newFile == true)
-                {
-                    fileDialogOpen = true;
-                    fileDialog.SetType(FileDialog::Type::NEWSAVE);
-                    fileDialog.SetDirectory(std::filesystem::current_path());
-                }
-                // TODO
-                //SetTitle("asdasd", false);
-            }
-            if (ImGui::MenuItem("Save As...", nullptr, false, true))
-            {
-                fileDialogOpen = true;
-                fileDialog.SetType(FileDialog::Type::SAVEAS);
-                fileDialog.SetFileName("untitled");
-                fileDialog.SetDirectory(std::filesystem::current_path());
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("View"))
-        {
-            if (ImGui::MenuItem("Redock", nullptr, false, true))
-            {
-                redock = true;
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("About"))
-        {
-            ImGui::MenuItem("https://github.com/onurae", nullptr, true, false);
-            ImGui::EndMenu();
-        }
+        MenuFile();
+        MenuView();
+        MenuAbout();
         ImGui::EndMenuBar();
     }
 }
 
-void MyApp::FileNewOpenSave()
+void MyApp::MenuFile()
+{
+    if (ImGui::BeginMenu("File"))
+    {
+        if (ImGui::MenuItem("New", nullptr, false, true))
+        {
+            SetTitle("new", true);
+            hasFile = false;
+            // TODO want to save the current project?
+            coreDiagram = std::make_unique<CoreDiagram>();
+        }
+        if (ImGui::MenuItem("Open", nullptr, false, true))
+        {
+            // TODO want to save the current project?
+            fileDialogOpen = true;
+            fileDialog.SetType(FileDialog::Type::OPEN);
+            fileDialog.SetFileName(fileDialog.GetFileFormat());
+            fileDialog.SetDirectory(hasFile ? filePath.parent_path() : std::filesystem::current_path());
+        }
+        if (ImGui::MenuItem("Save", nullptr, false, true))
+        {
+            if (hasFile == false)
+            {
+                fileDialogOpen = true;
+                fileDialog.SetType(FileDialog::Type::SAVE);
+                fileDialog.SetFileName("untitled");
+                fileDialog.SetDirectory(std::filesystem::current_path());
+            }
+            else
+            {
+                SaveProject(GetTitle(), filePath.string());
+            }
+        }
+        if (ImGui::MenuItem("Save As...", nullptr, false, true))
+        {
+            fileDialogOpen = true;
+            fileDialog.SetType(FileDialog::Type::SAVE);
+            fileDialog.SetFileName("untitled");
+            fileDialog.SetDirectory(filePath.parent_path());
+        }
+        ImGui::EndMenu();
+    }
+}
+
+void MyApp::MenuView()
+{
+    if (ImGui::BeginMenu("View"))
+    {
+        if (ImGui::MenuItem("Redock", nullptr, false, true))
+        {
+            redock = true;
+        }
+        ImGui::EndMenu();
+    }
+}
+
+void MyApp::MenuAbout()
+{
+    if (ImGui::BeginMenu("About"))
+    {
+        ImGui::MenuItem("https://github.com/onurae", nullptr, true, false);
+        ImGui::EndMenu();
+    }
+}
+
+void MyApp::DrawFileDialog()
 {
     if (fileDialog.Draw(&fileDialogOpen))
     {
-        auto filePath = fileDialog.GetResultPath().string();
         if (fileDialog.GetType() == FileDialog::Type::OPEN)
         {
-            auto fileNameFormat = fileDialog.GetFileName().string();
-            auto fileName = fileNameFormat.substr(0, fileNameFormat.rfind("."));
-            if (fileNameFormat.substr(fileNameFormat.rfind(".")) != fileFormat)
-            {
-                std::cout << "file format wrong" << std::endl;
-                // Error notif. TODO
-                return;
-            }
-
-            pugi::xml_document doc;
-            pugi::xml_parse_result result = doc.load_file(filePath.c_str(), pugi::parse_default | pugi::parse_declaration);
-            if (result)
-            {
-                pugi::xml_node root = doc.document_element();
-                // TODO check version.
-                // TODO want to save the current project?
-                coreDiagram = std::make_unique<CoreDiagram>();
-                coreDiagram->Load(root);
-                SetTitle(fileName, false);
-            }
-            else
-            {
-                //Load Error.
-            }
+            LoadProject();
         }
-        else if (fileDialog.GetType() == FileDialog::Type::SAVEAS)
+        else if (fileDialog.GetType() == FileDialog::Type::SAVE)
         {
-            filePath = fileDialog.GetResultPath().string();
-            auto fileName = fileDialog.GetFileName().string();
-
-            pugi::xml_document doc;
-            auto declarationNode = doc.append_child(pugi::node_declaration);
-            declarationNode.append_attribute("version") = "1.0";
-            declarationNode.append_attribute("encoding") = "ISO-8859-1";
-            declarationNode.append_attribute("standalone") = "yes";
-
-            auto root = doc.append_child("core-nodes");
-            root.append_attribute("version").set_value("v0.1.0");
-            auto sim = root.append_child("simulation");
-            sim.append_attribute("solver").set_value(1);
-            sim.append_attribute("sampleTime").set_value(0.01);
-            sim.append_attribute("stopTime").set_value(5.0);
-            sim.append_attribute("speed").set_value("realTime");
-            coreDiagram->Save(root);
-
-            std::string filePathFormat = filePath + fileFormat;
-            bool saveSucceeded = doc.save_file(filePathFormat.c_str(), PUGIXML_TEXT("  "));
-            if (saveSucceeded)
-            {
-                SetTitle(fileName, false);
-            }
-            else
-            {
-                // Error!
-            }
+            SaveProject(fileDialog.GetFileName().string(), fileDialog.GetResultPath().string());
         }
-        else if (fileDialog.GetType() == FileDialog::Type::NEWSAVE)
-        {
-            filePath = fileDialog.GetResultPath().string();
-            auto fileName = fileDialog.GetFileName().string();
+    }
+}
 
-            pugi::xml_document doc;
-            auto declarationNode = doc.append_child(pugi::node_declaration);
-            declarationNode.append_attribute("version") = "1.0";
-            declarationNode.append_attribute("encoding") = "ISO-8859-1";
-            declarationNode.append_attribute("standalone") = "yes";
+void MyApp::SaveProject(const std::string& fName, const std::string& fPath)
+{
+    pugi::xml_document doc;
+    auto declarationNode = doc.append_child(pugi::node_declaration);
+    declarationNode.append_attribute("version") = "1.0";
+    declarationNode.append_attribute("encoding") = "ISO-8859-1";
+    declarationNode.append_attribute("standalone") = "yes";
 
-            auto root = doc.append_child("core-nodes");
-            root.append_attribute("version").set_value("v0.1.0");
-            auto sim = root.append_child("simulation");
-            sim.append_attribute("solver").set_value(1);
-            sim.append_attribute("sampleTime").set_value(0.01);
-            sim.append_attribute("stopTime").set_value(5.0);
-            sim.append_attribute("speed").set_value("realTime");
-            coreDiagram->Save(root);
+    auto root = doc.append_child("core-nodes");
+    root.append_attribute("version").set_value("v0.1.0");
+    auto sim = root.append_child("simulation");
+    sim.append_attribute("solver").set_value(1);
+    sim.append_attribute("sampleTime").set_value(0.01);
+    sim.append_attribute("stopTime").set_value(5.0);
+    sim.append_attribute("speed").set_value("realTime");
+    coreDiagram->Save(root);
 
-            std::string filePathFormat = filePath + fileFormat;
-            bool saveSucceeded = doc.save_file(filePathFormat.c_str(), PUGIXML_TEXT("  "));
-            if (saveSucceeded)
-            {
-                SetTitle(fileName, false);
-                newFile = false;
-            }
-            else
-            {
-                // Error!
-            }
-        }
+    if (doc.save_file(fPath.c_str(), PUGIXML_TEXT("  ")))
+    {
+        SetTitle(fName, false);
+        filePath = fPath;
+        hasFile = true;
+    }
+    else
+    {
+        // Error!
+    }
+}
+
+void MyApp::LoadProject()
+{
+    auto fPath = fileDialog.GetResultPath().string();
+    auto fNameWFormat = fileDialog.GetFileName().string();
+    auto fNameWoFormat = fNameWFormat.substr(0, fNameWFormat.rfind("."));
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(fPath.c_str(), pugi::parse_default | pugi::parse_declaration);
+    if (result)
+    {
+        pugi::xml_node root = doc.document_element();
+        // TODO check version.
+        coreDiagram = std::make_unique<CoreDiagram>();
+        coreDiagram->Load(root);
+        SetTitle(fNameWoFormat, false);
+        filePath = fileDialog.GetResultPath();
+        hasFile = true;
+    }
+    else
+    {
+        //Load Error.
     }
 }
 

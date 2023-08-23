@@ -22,9 +22,9 @@ public:
     void TestBasic() const;
 
 private:
-    bool newFile = true;
-    std::string fileFormat{ ".dxdt" };
-    std::string version{ "v0.1.0 " };
+    bool hasFile = false;
+    std::filesystem::path filePath;
+    std::string version{ "v0.1.0" };
     bool open = true;
     bool redock = false;
     bool fileDialogOpen = false;
@@ -34,5 +34,12 @@ private:
 
     void Dockspace();
     void Menu();
-    void FileNewOpenSave();
+    void MenuFile();
+    void MenuView();
+    void MenuAbout();
+
+    void DrawFileDialog();
+
+    void SaveProject(const std::string& fName, const std::string& fPath);
+    void LoadProject();
 };

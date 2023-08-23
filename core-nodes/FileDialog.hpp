@@ -20,12 +20,12 @@ class FileDialog
 public:
     enum class Type
     {
-        SAVEAS,
-        NEWSAVE,
+        SAVE,
         OPEN
     };
 private:
     Type type = Type::OPEN;
+    std::string fileFormat{ ".dxdt" };
     std::filesystem::path fileName;
     std::filesystem::path directoryPath;
     std::filesystem::path resultPath;
@@ -46,6 +46,7 @@ public:
     void SetDirectory(const std::filesystem::path& dir) { directoryPath = dir; }
     std::filesystem::path GetResultPath() const { return resultPath; }
     auto GetFileName() const { return fileName; }
+    auto GetFileFormat() const { return fileFormat; }
     Type GetType() const { return type; }
     bool Draw(bool* open);
 };
