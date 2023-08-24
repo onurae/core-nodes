@@ -14,6 +14,7 @@ void MyApp::Update()
     //TestBasic();
     Dockspace();
     DrawFileDialog();
+    Notifier::Draw();
 }
 
 MyApp::MyApp() : GuiApp("MyApp")
@@ -198,10 +199,11 @@ void MyApp::SaveProject(const std::string& fName, const std::string& fPath)
         SetTitle(fName, false);
         filePath = fPath;
         hasFile = true;
+        Notifier::Add(Notif(Notif::Type::SUCCESS, "File saved.", "")); // TODO icon
     }
     else
     {
-        // Error!
+        Notifier::Add(Notif(Notif::Type::ERROR, "File save failed.", ""));
     }
 }
 
@@ -221,10 +223,11 @@ void MyApp::LoadProject()
         SetTitle(fNameWoFormat, false);
         filePath = fileDialog.GetResultPath();
         hasFile = true;
+        Notifier::Add(Notif(Notif::Type::SUCCESS, "File loaded.", "")); // TODO icon
     }
     else
     {
-        //Load Error.
+        Notifier::Add(Notif(Notif::Type::SUCCESS, "File load failed.", "")); // TODO icon
     }
 }
 

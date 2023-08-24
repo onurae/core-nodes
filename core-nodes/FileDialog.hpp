@@ -14,6 +14,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "pugixml.hpp"
+#include "Notifier.hpp"
 
 class FileDialog
 {

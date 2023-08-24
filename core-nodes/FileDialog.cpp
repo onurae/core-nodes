@@ -19,9 +19,9 @@ bool FileDialog::Draw(bool* open)
     bool done = false;
     title = (type == Type::OPEN) ? "Open File" : "Save File";
     ImGui::SetNextWindowSize(ImVec2(660.0f, 410.0f), ImGuiCond_Once);
-    ImGui::SetNextWindowSizeConstraints(ImVec2(410, 410), ImVec2(1280, 410));
-
-    if (ImGui::Begin(title.c_str(), open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking))
+    ImGui::SetNextWindowSizeConstraints(ImVec2(410, 410), ImVec2(660, 410));
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Once, ImVec2(0.5f, 0.5f));
+    if (ImGui::Begin(title.c_str(), open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBringToFrontOnFocus))
     {
         if (currentFiles.empty() && currentDirectories.empty() || refresh)
         {
@@ -127,12 +127,14 @@ bool FileDialog::Draw(bool* open)
                 }
                 else
                 {
-                    // no found notif.
+                    Notifier::Add(Notif(Notif::Type::ERROR, "", "File format is not valid."));
                 }
             }
         }
         else if (type == Type::SAVE)
         {
+            const auto beforeFormatCheck = resultPath.string();
+            bool isFormatCorrect = false;
             if (auto dot = fileName.string().rfind("."); dot == std::string::npos)
             {
                 resultPath = resultPath.string() + fileFormat;
@@ -141,9 +143,17 @@ bool FileDialog::Draw(bool* open)
             {
                 resultPath = resultPath.string() + fileFormat;
             }
+            else
+            {
+                isFormatCorrect = true;
+            }
             if (ImGui::Button("Save"))
             {
-                if (std::filesystem::exists(resultPath) == false)
+                if (std::filesystem::exists(beforeFormatCheck) == true && isFormatCorrect == false)
+                {
+                    Notifier::Add(Notif(Notif::Type::ERROR, "", "Another file exists with the same name."));
+                }
+                else if (std::filesystem::exists(resultPath) == false)
                 {
                     refresh = false;
                     currentIndex = 0;
@@ -154,8 +164,28 @@ bool FileDialog::Draw(bool* open)
                 }
                 else
                 {
-                    // Override popup?
+                    ImGui::OpenPopup("FileOverride");
                 }
+            }
+            if (ImGui::BeginPopupModal("FileOverride"))
+            {
+                ImGui::Text("The file already exists. Do you want to override?");
+                ImGui::Separator();
+                if (ImGui::Button("No")) 
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Yes"))
+                {
+                    refresh = false;
+                    currentIndex = 0;
+                    currentFiles.clear();
+                    currentDirectories.clear();
+                    done = true;
+                    *open = false;
+                }
+                ImGui::EndPopup();
             }
         }
     }
