@@ -15,13 +15,17 @@ bool FileDialog::Draw(bool* open)
     {
         return false;
     }
+    else
+    {
+        ImGui::OpenPopup(title.c_str());
+    }
 
     bool done = false;
     title = (type == Type::OPEN) ? "Open File" : "Save File";
     ImGui::SetNextWindowSize(ImVec2(660.0f, 410.0f), ImGuiCond_Once);
-    ImGui::SetNextWindowSizeConstraints(ImVec2(410, 410), ImVec2(660, 410));
-    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Once, ImVec2(0.5f, 0.5f));
-    if (ImGui::Begin(title.c_str(), open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBringToFrontOnFocus))
+    ImGui::SetNextWindowSizeConstraints(ImVec2(410, 410), ImVec2(1080, 410));
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal(title.c_str(), open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBringToFrontOnFocus))
     {
         if (currentFiles.empty() && currentDirectories.empty() || refresh)
         {
@@ -164,12 +168,13 @@ bool FileDialog::Draw(bool* open)
                 }
                 else
                 {
-                    ImGui::OpenPopup("FileOverride");
+                    ImGui::OpenPopup("Override?");
                 }
             }
-            if (ImGui::BeginPopupModal("FileOverride"))
+            ImGui::SetNextWindowPos(ImGui::GetCurrentWindow()->Rect().GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+            if (ImGui::BeginPopupModal("Override?"))
             {
-                ImGui::Text("The file already exists. Do you want to override?");
+                ImGui::Text("File already exists. Do you want to override?");
                 ImGui::Separator();
                 if (ImGui::Button("No")) 
                 {
@@ -188,8 +193,8 @@ bool FileDialog::Draw(bool* open)
                 ImGui::EndPopup();
             }
         }
+        ImGui::EndPopup();
     }
-    ImGui::End();
     return done;
 }
 
