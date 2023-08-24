@@ -44,10 +44,10 @@ float Notif::GetFadeValue() const
 
 ImColor Notif::GetColor() const
 {
-    if (type == Type::SUCCESS) { return ImColor(0.0f, 1.0f, 0.0f, 1.0f); }
-    else if (type == Type::WARNING) { return ImColor(1.0f, 1.0f, 0.0f, 1.0f); }
-    else if (type == Type::ERROR) { return ImColor(1.0f, 0.0f, 0.0f, 1.0f); }
-    else if (type == Type::INFO) { return ImColor(0.0f, 0.3f, 1.0f, 1.0f); }
+    if (type == Type::SUCCESS) { return ImColor(0.0f, 0.5f, 0.0f, 1.0f); }
+    else if (type == Type::WARNING) { return ImColor(0.5f, 0.5f, 0.0f, 1.0f); }
+    else if (type == Type::ERROR) { return ImColor(0.5f, 0.0f, 0.0f, 1.0f); }
+    else if (type == Type::INFO) { return ImColor(0.0f, 0.3f, 0.5f, 1.0f); }
     else { return ImColor(1.0f, 1.0f, 1.0f, 1.0f); }
 }
 
