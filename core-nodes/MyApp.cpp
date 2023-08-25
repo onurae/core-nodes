@@ -17,6 +17,42 @@ void MyApp::Update()
     ImGui::PushFont(fontLarge);
     Notifier::Draw();
     ImGui::PopFont();
+    if (coreDiagram->GetModificationFlag() == true)
+    {
+        pugi::xml_document doc;
+        auto declarationNode = doc.append_child(pugi::node_declaration);
+        declarationNode.append_attribute("version") = "1.0";
+        declarationNode.append_attribute("encoding") = "ISO-8859-1";
+        declarationNode.append_attribute("standalone") = "yes";
+
+        auto root = doc.append_child("core-nodes");
+        root.append_attribute("version").set_value("v0.1.0");
+        auto sim = root.append_child("simulation");
+        sim.append_attribute("solver").set_value(1);
+        sim.append_attribute("sampleTime").set_value(0.01);
+        sim.append_attribute("stopTime").set_value(5.0);
+        sim.append_attribute("speed").set_value("realTime");
+        coreDiagram->Save(root);
+
+        xmls.emplace_back();
+        xmls.back().reset(doc);
+        coreDiagram->ResetModificationFlag();
+        SetAsterisk(true);
+        if (xmls.size() > 100)
+        {
+            xmls.pop_front();
+        }
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_Space))
+    {
+        // initially file must be added to xmls. TODO, it crashes at the beginning.
+        auto doc = &(xmls[xmls.size() - 2]); // TODO only goes back once. there can be an index state maybe.
+        pugi::xml_node root = doc->document_element();
+        coreDiagram = std::make_unique<CoreDiagram>();
+        coreDiagram->Load(root);
+        SetAsterisk(true);
+        Notifier::Add(Notif(Notif::Type::SUCCESS, "Undo"));
+    }
 }
 
 MyApp::MyApp() : GuiApp("MyApp")

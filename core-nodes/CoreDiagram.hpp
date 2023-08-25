@@ -35,8 +35,11 @@ public:
     void Update();
     void Save(pugi::xml_node& xmlNode) const;
     void Load(const pugi::xml_node& xmlNode);
+    bool GetModificationFlag() const { return modificationFlag; }
+    void ResetModificationFlag() { modificationFlag = false; }
 
 private:
+    bool modificationFlag = false;
     CoreNodeLib coreNodeLib;
     State state = State::Default;
     float scale = 1.0f;

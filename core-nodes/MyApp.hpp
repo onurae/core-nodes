@@ -10,6 +10,7 @@
 #include "gui-app-template/GuiApp.hpp"
 #include "CoreDiagram.hpp"
 #include <memory>
+#include <deque>
 #include <iostream>
 
 class MyApp : public GuiApp
@@ -45,4 +46,6 @@ private:
     void LoadProject();
 
     void SelectTab(const char* windowName) const;
+
+    std::deque<pugi::xml_document> xmls;
 };

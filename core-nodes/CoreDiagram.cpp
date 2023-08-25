@@ -218,6 +218,7 @@ void CoreDiagram::MouseLeftButtonDoubleClick()
                 hovNode->SetRectNode(rNode);
                 //iNode->Translate(ImVec2(0.0f, iNode->GetBodyHeight() * 0.5f));
             }
+            modificationFlag = true;
         }
     }
     else if (state == State::HoveringInput) // Break connection
