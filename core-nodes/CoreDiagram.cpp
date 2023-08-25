@@ -152,8 +152,7 @@ void CoreDiagram::MouseMove()
         }
         else if (hovNode == nullptr)
         {
-            // None state is here to prevent changing the state from hovering input(connected) to selecting.
-            state = ImGui::IsMouseDragging(0) == true ? State::None : state = State::Default; 
+            state = State::Default;
             iNode = nullptr;
             iNodeInput = nullptr;
             iNodeOutput = nullptr;
@@ -323,6 +322,10 @@ void CoreDiagram::MouseLeftButtonSingleClick()
         if (iNodeInput->GetTargetNode() == nullptr)
         {
             state = State::DragingInput; // SetState:DragingInput
+        }
+        else
+        {
+            state = State::Draging;
         }
     }
     else if (state == State::HoveringOutput)
