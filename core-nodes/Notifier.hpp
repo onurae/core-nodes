@@ -32,11 +32,11 @@ public:
         ERROR,
         INFO
     };
-    Notif(Type type, const std::string& title, const std::string& content, float onTime = 3.0f);
+    Notif(Type type, const std::string& title, const std::string& content = "", float onTime = 3.0f);
     virtual ~Notif() = default;
 
     Status GetStatus() const;
-    std::string GetIcon() const { return icon; }
+    std::string GetIcon() const;
     std::string GetTitle() const { return title; }
     std::string GetContent() const { return content; }
     std::string GetTypeName() const;
@@ -45,7 +45,6 @@ public:
 
 private:
     Type type = Type::NONE;
-    std::string icon{ "" };
     std::string title{ "" };
     std::string content{ "" };
     float fadeInTime{ 0.150f };

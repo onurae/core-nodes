@@ -172,16 +172,11 @@ bool FileDialog::Draw(bool* open)
                 }
             }
             ImGui::SetNextWindowPos(ImGui::GetCurrentWindow()->Rect().GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-            if (ImGui::BeginPopupModal("Override?"))
+            if (ImGui::BeginPopupModal("Override?", nullptr, ImGuiWindowFlags_NoResize))
             {
                 ImGui::Text("File already exists. Do you want to override?");
                 ImGui::Separator();
-                if (ImGui::Button("No")) 
-                {
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Yes"))
+                if (ImGui::Button("Yes", ImVec2(50.0f, 0.0f)))
                 {
                     refresh = false;
                     currentIndex = 0;
@@ -189,6 +184,11 @@ bool FileDialog::Draw(bool* open)
                     currentDirectories.clear();
                     done = true;
                     *open = false;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("No", ImVec2(50.0f, 0.0f)))
+                {
+                    ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
             }

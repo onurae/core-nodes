@@ -14,12 +14,14 @@ void MyApp::Update()
     //TestBasic();
     Dockspace();
     DrawFileDialog();
+    ImGui::PushFont(fontLarge);
     Notifier::Draw();
+    ImGui::PopFont();
 }
 
 MyApp::MyApp() : GuiApp("MyApp")
 {
-    SetTitle("untitled", false);
+    SetTitle("untitled");
     coreDiagram = std::make_unique<CoreDiagram>();
 }
 
@@ -84,6 +86,13 @@ void MyApp::Dockspace()
     ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_None);
     ImGui::Text("Text");
     ImGui::End();
+
+    if (initialSetup == false)
+    {
+        SelectTab("Simulation");
+        initialSetup = true;
+        ImGui::SetWindowFocus("Diagram");
+    }
 }
 
 void MyApp::Menu()
@@ -103,9 +112,9 @@ void MyApp::MenuFile()
     {
         if (ImGui::MenuItem("New", nullptr, false, true))
         {
-            SetTitle("new", true);
-            hasFile = false;
             // TODO want to save the current project?
+            SetTitle("new");
+            hasFile = false;
             coreDiagram = std::make_unique<CoreDiagram>();
         }
         if (ImGui::MenuItem("Open", nullptr, false, true))
@@ -196,14 +205,15 @@ void MyApp::SaveProject(const std::string& fName, const std::string& fPath)
 
     if (doc.save_file(fPath.c_str(), PUGIXML_TEXT("  ")))
     {
-        SetTitle(fName, false);
         filePath = fPath;
         hasFile = true;
-        Notifier::Add(Notif(Notif::Type::SUCCESS, "File saved.", "")); // TODO icon
+        SetTitle(fName);
+        SetAsterisk(false);
+        Notifier::Add(Notif(Notif::Type::SUCCESS, "Saved"));
     }
     else
     {
-        Notifier::Add(Notif(Notif::Type::ERROR, "File save failed.", ""));
+        Notifier::Add(Notif(Notif::Type::ERROR, "Save failed"));
     }
 }
 
@@ -220,15 +230,23 @@ void MyApp::LoadProject()
         // TODO check version.
         coreDiagram = std::make_unique<CoreDiagram>();
         coreDiagram->Load(root);
-        SetTitle(fNameWoFormat, false);
         filePath = fileDialog.GetResultPath();
         hasFile = true;
-        Notifier::Add(Notif(Notif::Type::SUCCESS, "File loaded.", "")); // TODO icon
+        SetTitle(fNameWoFormat);
+        SetAsterisk(false);
+        Notifier::Add(Notif(Notif::Type::SUCCESS, "Loaded"));
     }
     else
     {
-        Notifier::Add(Notif(Notif::Type::SUCCESS, "File load failed.", "")); // TODO icon
+        Notifier::Add(Notif(Notif::Type::ERROR, "Load failed"));
     }
+}
+
+void MyApp::SelectTab(const char* windowName) const
+{
+    ImGuiWindow* window = ImGui::FindWindowByName(windowName);
+    if (window == nullptr || window->DockNode == nullptr || window->DockNode->TabBar == nullptr) { return; }
+    window->DockNode->TabBar->NextSelectedTabId = window->TabId;
 }
 
 void MyApp::TestBasic() const

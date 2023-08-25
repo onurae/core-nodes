@@ -18,6 +18,15 @@ Notif::Status Notif::GetStatus() const
     else { return Status::FADEIN; }
 }
 
+std::string Notif::GetIcon() const
+{
+    if (type == Type::SUCCESS) { return std::string(u8"\ue86c"); }
+    else if (type == Type::WARNING) { return std::string(u8"\ue002"); }
+    else if (type == Type::ERROR) { return std::string(u8"\ue000"); }
+    else if (type == Type::INFO) { return std::string(u8"\ue88e"); }
+    else { return ""; }
+}
+
 std::string Notif::GetTypeName() const
 {
     if (type == Type::SUCCESS) { return "Success"; }
@@ -77,20 +86,17 @@ void Notifier::DrawNotifications()
         ImGui::SetNextWindowPos(ImVec2(rightCorner.x - xPadding, rightCorner.y - yPadding - height), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
         ImGui::Begin(notifName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing);
         ImGui::PushTextWrapPos(ImGui::GetMainViewport()->Size.x * wrapRatio);
-        if (const auto icon = notif->GetIcon(); icon.empty() == false)
-        {
-            auto iconColor = notif->GetColor();
-            iconColor.Value.w = fadeValue;
-            ImGui::TextColored(iconColor, icon.c_str());
-        }
+        const auto icon = notif->GetIcon();
+        auto iconColor = notif->GetColor();
+        iconColor.Value.w = fadeValue;
+        ImGui::TextColored(iconColor, icon.c_str());
+        ImGui::SameLine();
         if (const auto title = notif->GetTitle(); title.empty() == false)
         {
-            //if (icon.empty() == false) { ImGui::SameLine(); }
             ImGui::TextColored(ImVec4(0.0f, 0.0f, 0.0f, 1.0f), title.c_str());
         }
         else if (const auto typeName = notif->GetTypeName(); typeName.empty() == false)
         {
-            //if (icon.empty() == false) { ImGui::SameLine(); }
             ImGui::TextColored(notif->GetColor(), typeName.c_str());
         }
         if (const auto content = notif->GetContent(); content.empty() == false)

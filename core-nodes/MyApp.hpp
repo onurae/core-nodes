@@ -22,6 +22,7 @@ public:
     void TestBasic() const;
 
 private:
+    bool initialSetup = false;
     bool hasFile = false;
     std::filesystem::path filePath;
     std::string version{ "v0.1.0" };
@@ -42,4 +43,6 @@ private:
 
     void SaveProject(const std::string& fName, const std::string& fPath);
     void LoadProject();
+
+    void SelectTab(const char* windowName) const;
 };
