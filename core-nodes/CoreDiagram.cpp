@@ -28,6 +28,75 @@ void CoreDiagram::Update()
     Popups();
 }
 
+void CoreDiagram::Save(pugi::xml_node& xmlNode) const
+{
+    auto node = xmlNode.append_child("diagram");
+    SaveFloat(node, "scale", scale);
+    SaveImVec2(node, "scroll", scroll);
+    auto nodeList = node.append_child("nodeList");
+    for (const auto& element : coreNodeVec)
+    {
+        element->Save(nodeList);
+    }
+    auto linkList = node.append_child("linkList");
+    for (const auto& element : linkVec)
+    {
+        element.Save(linkList);
+    }
+}
+
+void CoreDiagram::Load(const pugi::xml_node& xmlNode)
+{
+    auto node = xmlNode.child("diagram");
+    state = State::Default;
+    scale = LoadFloat(node, "scale");
+    scroll = LoadImVec2(node, "scroll");
+    highlightedNode = nullptr;
+    hovNode = nullptr;
+    iNode = nullptr;
+    iNodeInput = nullptr;
+    iNodeOutput = nullptr;
+    rectCanvas = ImRect();
+    rectSelecting = ImRect();
+    inputFreeLink = ImVec2();
+    outputFreeLink = ImVec2();
+    for (const auto& element : node.child("nodeList").children("node"))
+    {
+        coreNodeVec.emplace_back(new CoreNode());
+        coreNodeVec.back()->Load(element);
+    }
+    for (const auto& element : node.child("linkList").children("link"))
+    {
+        linkVec.emplace_back();
+        linkVec.back().Load(element);
+
+        // Match pointers
+        auto inputNodeName = LoadString(element, "inputNode");
+        auto outputNodeName = LoadString(element, "outputNode");
+        auto inputPortOrder = LoadInt(element, "inputPort");
+        auto outputPortOrder = LoadInt(element, "outputPort");
+        for (auto coreNode : coreNodeVec)
+        {
+            auto coreName = coreNode->GetName();
+            if (coreName == inputNodeName)
+            {
+                linkVec.back().inputNode = coreNode;
+                linkVec.back().inputPort = &(coreNode->GetInputVec().at(inputPortOrder));
+            }
+            if (coreName == outputNodeName)
+            {
+                linkVec.back().outputNode = coreNode;
+                linkVec.back().outputPort = &(coreNode->GetOutputVec().at(outputPortOrder));
+            }
+        }
+        for (auto& link : linkVec)
+        {
+            link.inputPort->SetTargetNode(link.outputNode);
+            link.inputPort->SetTargetNodeOutput(link.outputPort);
+        }
+    }
+}
+
 void CoreDiagram::Actions()
 {
     MouseMove();
@@ -74,10 +143,16 @@ void CoreDiagram::MouseMove()
                      (state == State::HoveringInput) || (state == State::HoveringOutput);
     if (condition == true)
     {
-        if (hovNode == nullptr)
+        if (ImGui::IsWindowHovered() == false)
         {
-            ImRect canvas(position, position + size);
-            state = (canvas.Contains(mousePos) == true) ? State::Default : State::None;
+            state = State::None;
+            iNode = nullptr;
+            iNodeInput = nullptr;
+            iNodeOutput = nullptr;
+        }
+        else if (hovNode == nullptr)
+        {
+            state = State::Default;
             iNode = nullptr;
             iNodeInput = nullptr;
             iNodeOutput = nullptr;
@@ -248,6 +323,10 @@ void CoreDiagram::MouseLeftButtonSingleClick()
         {
             state = State::DragingInput; // SetState:DragingInput
         }
+        else
+        {
+            state = State::Draging;
+        }
     }
     else if (state == State::HoveringOutput)
     {
@@ -388,7 +467,7 @@ void CoreDiagram::MouseRightButtonRelease()
 {
     // Open menu, temporary.
     const ImGuiIO& io = ImGui::GetIO();
-    if (rectCanvas.Contains(mousePos) && ImGui::IsMouseDown(0) == false && ImGui::IsMouseReleased(1) && iNode == nullptr)
+    if (state != State::None && rectCanvas.Contains(mousePos) && ImGui::IsMouseDown(0) == false && ImGui::IsMouseReleased(1) && iNode == nullptr)
     {
         if (io.MouseDragMaxDistanceSqr[1] < (io.MouseDragThreshold * io.MouseDragThreshold))
         {
@@ -604,7 +683,7 @@ void CoreDiagram::UpdateCanvasScrollZoom()
 {
     const ImGuiIO& io = ImGui::GetIO();
     bool dragCond = state == State::DragingInput || state == State::DragingOutput;
-    if ((ImGui::IsMouseDown(0) == false || dragCond) && rectCanvas.Contains(mousePos))
+    if (state != State::None && (ImGui::IsMouseDown(0) == false || dragCond) && rectCanvas.Contains(mousePos))
     {
         if (ImGui::IsKeyPressed(ImGuiKey_Space))
         {
@@ -712,7 +791,8 @@ void CoreDiagram::UpdateNodeFlags()
         }
 
         // Hovered Node Condition
-        if (hovNode == nullptr && (nodeArea.Contains(mousePos) || inputArea.Contains(mousePos) || outputArea.Contains(mousePos)))
+        if (state != State::None && hovNode == nullptr &&
+            (nodeArea.Contains(mousePos) || inputArea.Contains(mousePos) || outputArea.Contains(mousePos)))
         {
             hovNode = node;
             hovNode->GetFlagSet().SetFlag(NodeFlag::Hovered);
@@ -789,7 +869,7 @@ void CoreDiagram::UpdateInputFlags(CoreNode* node)
         inputRect.Max *= scale;
         ImVec2 offset = position + scroll;
         inputRect.Translate(offset);
-        if (inputRect.Contains(mousePos))
+        if (state != State::None && inputRect.Contains(mousePos))
         {
             if (state != State::DragingOutput)
             {
@@ -857,7 +937,7 @@ void CoreDiagram::UpdateOutputFlags(CoreNode* node)
         outputRect.Max *= scale;
         ImVec2 offset = position + scroll;
         outputRect.Translate(offset);
-        if (outputRect.Contains(mousePos))
+        if (state != State::None && outputRect.Contains(mousePos))
         {
             if (state != State::DragingInput)
             {

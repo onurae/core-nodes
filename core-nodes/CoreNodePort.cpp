@@ -27,6 +27,47 @@ CoreNodeInput::CoreNodeInput(const std::string& name, PortType type, PortDataTyp
     rectPort.Translate(offset);
 }
 
+void CoreNodeInput::Save(pugi::xml_node& xmlNode) const
+{
+    auto node = xmlNode.append_child("input");
+    node.append_attribute("name").set_value(name.c_str());
+    SaveImVec2(node, "position", position);
+    SaveFloat(node, "ref", ref);
+    SaveImRect(node, "rectName", rectName);
+    SaveImRect(node, "rectPin", rectPin);
+    SaveImRect(node, "rectPort", rectPort);
+    SaveInt(node, "type", (int)type);
+    SaveInt(node, "dataType", (int)dataType);
+    SaveInt(node, "order", order);
+    SaveInt(node, "flagSet", flagSet.GetInt());
+    SaveBool(node, "inverted", inverted);
+    SaveInt(node, "linkDir", linkDir);
+    SaveInt(node, "linkSepX", linkSepX);
+    SaveInt(node, "linkSepY", linkSepY);
+    SaveInt(node, "targetLinkDir", targetLinkDir);
+    SaveInt(node, "targetLinkSep", targetLinkSep);
+}
+
+void CoreNodeInput::Load(const pugi::xml_node & xmlNode)
+{
+    name = xmlNode.attribute("name").as_string();
+    position = LoadImVec2(xmlNode, "position");
+    ref = LoadFloat(xmlNode, "ref");
+    rectName = LoadImRect(xmlNode, "rectName");
+    rectPin = LoadImRect(xmlNode, "rectPin");
+    rectPort = LoadImRect(xmlNode, "rectPort");
+    type = (PortType)LoadInt(xmlNode, "type");
+    dataType = (PortDataType)LoadInt(xmlNode, "dataType");
+    order = LoadInt(xmlNode, "order");
+    flagSet.SetInt(LoadInt(xmlNode, "flagSet"));
+    inverted = LoadBool(xmlNode, "inverted");
+    linkDir = LoadInt(xmlNode, "linkDir");
+    linkSepX = LoadInt(xmlNode, "linkSepX");
+    linkSepY = LoadInt(xmlNode, "linkSepY");
+    targetLinkDir = LoadInt(xmlNode, "targetLinkDir");
+    targetLinkSep = LoadInt(xmlNode, "targetLinkSep");
+}
+
 void CoreNodeInput::BreakLink()
 {
     if (targetNodeOutput != nullptr)
@@ -191,6 +232,39 @@ CoreNodeOutput::CoreNodeOutput(const std::string& name, PortType type, PortDataT
     rectPin.Translate(offset);
     rectPort.Translate(offset);
     rectName.Translate(offset);
+}
+
+void CoreNodeOutput::Save(pugi::xml_node & xmlNode) const
+{
+    auto node = xmlNode.append_child("output");
+    node.append_attribute("name").set_value(name.c_str());
+    SaveImVec2(node, "position", position);
+    SaveFloat(node, "ref", ref);
+    SaveImRect(node, "rectName", rectName);
+    SaveImRect(node, "rectPin", rectPin);
+    SaveImRect(node, "rectPort", rectPort);
+    SaveInt(node, "type", (int)type);
+    SaveInt(node, "dataType", (int)dataType);
+    SaveInt(node, "order", order);
+    SaveInt(node, "flagSet", flagSet.GetInt());
+    SaveInt(node, "linkNum", linkNum);
+    SaveBool(node, "inverted", inverted);
+}
+
+void CoreNodeOutput::Load(const pugi::xml_node & xmlNode)
+{
+    name = xmlNode.attribute("name").as_string();
+    position = LoadImVec2(xmlNode, "position");
+    ref = LoadFloat(xmlNode, "ref");
+    rectName = LoadImRect(xmlNode, "rectName");
+    rectPin = LoadImRect(xmlNode, "rectPin");
+    rectPort = LoadImRect(xmlNode, "rectPort");
+    type = (PortType)LoadInt(xmlNode, "type");
+    dataType = (PortDataType)LoadInt(xmlNode, "dataType");
+    order = LoadInt(xmlNode, "order");
+    flagSet.SetInt(LoadInt(xmlNode, "flagSet"));
+    linkNum = LoadInt(xmlNode, "linkNum");
+    inverted = LoadBool(xmlNode, "inverted");
 }
 
 void CoreNodeOutput::Translate(ImVec2 delta)

@@ -33,6 +33,8 @@ public:
     CoreDiagram() = default;
     virtual ~CoreDiagram();
     void Update();
+    void Save(pugi::xml_node& xmlNode) const;
+    void Load(const pugi::xml_node& xmlNode);
 
 private:
     CoreNodeLib coreNodeLib;
@@ -99,6 +101,29 @@ private:
         float xSepIn;
         float xSepOut;
         float ykSep = 0;
+        void Save(pugi::xml_node& xmlNode) const
+        {
+            auto link = xmlNode.append_child("link");
+            SaveString(link, "inputNode", inputNode->GetName());
+            SaveString(link, "outputNode", outputNode->GetName());
+            SaveInt(link, "inputPort", inputPort->GetOrder());
+            SaveInt(link, "outputPort", outputPort->GetOrder());
+            SaveInt(link, "type", (int)type);
+            SaveImColor(link, "color", color);
+            SaveFloat(link, "thickness", thickness);
+            SaveFloat(link, "xSepIn", xSepIn);
+            SaveFloat(link, "xSepOut", xSepOut);
+            SaveFloat(link, "ykSep", ykSep);
+        }
+        void Load(const pugi::xml_node& xmlNode)
+        {
+            type = (LinkType)LoadInt(xmlNode, "type");
+            color = LoadImColor(xmlNode, "color");
+            thickness = LoadFloat(xmlNode, "thickness");
+            xSepIn = LoadFloat(xmlNode, "xSepIn");
+            xSepOut = LoadFloat(xmlNode, "xSepOut");
+            ykSep = LoadFloat(xmlNode, "ykSep");
+        }
     };
     std::vector<Link> linkVec;
     void EraseLink(const CoreNodeInput* input);
