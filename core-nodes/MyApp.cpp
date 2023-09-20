@@ -138,7 +138,7 @@ void MyApp::MenuFile()
             fileDialogOpen = true;
             fileDialog.SetType(FileDialog::Type::SAVE);
             fileDialog.SetFileName("untitled");
-            fileDialog.SetDirectory(filePath.parent_path());
+            fileDialog.SetDirectory(hasFile ? filePath.parent_path() : std::filesystem::current_path());
         }
         ImGui::EndMenu();
     }
