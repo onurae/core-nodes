@@ -39,7 +39,9 @@ public:
     void ResetModificationFlag() { modificationFlag = false; }
 
 private:
+    bool mNodeDrag = false; // For node drag modification.
     bool modificationFlag = false;
+
     CoreNodeLib coreNodeLib;
     State state = State::Default;
     float scale = 1.0f;

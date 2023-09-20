@@ -17,42 +17,7 @@ void MyApp::Update()
     ImGui::PushFont(fontLarge);
     Notifier::Draw();
     ImGui::PopFont();
-    if (coreDiagram->GetModificationFlag() == true)
-    {
-        pugi::xml_document doc;
-        auto declarationNode = doc.append_child(pugi::node_declaration);
-        declarationNode.append_attribute("version") = "1.0";
-        declarationNode.append_attribute("encoding") = "ISO-8859-1";
-        declarationNode.append_attribute("standalone") = "yes";
-
-        auto root = doc.append_child("core-nodes");
-        root.append_attribute("version").set_value("v0.1.0");
-        auto sim = root.append_child("simulation");
-        sim.append_attribute("solver").set_value(1);
-        sim.append_attribute("sampleTime").set_value(0.01);
-        sim.append_attribute("stopTime").set_value(5.0);
-        sim.append_attribute("speed").set_value("realTime");
-        coreDiagram->Save(root);
-
-        xmls.emplace_back();
-        xmls.back().reset(doc);
-        coreDiagram->ResetModificationFlag();
-        SetAsterisk(true);
-        if (xmls.size() > 100)
-        {
-            xmls.pop_front();
-        }
-    }
-    if (ImGui::IsKeyPressed(ImGuiKey_Space))
-    {
-        // initially file must be added to xmls. TODO, it crashes at the beginning.
-        auto doc = &(xmls[xmls.size() - 2]); // TODO only goes back once. there can be an index state maybe.
-        pugi::xml_node root = doc->document_element();
-        coreDiagram = std::make_unique<CoreDiagram>();
-        coreDiagram->Load(root);
-        SetAsterisk(true);
-        Notifier::Add(Notif(Notif::Type::SUCCESS, "Undo"));
-    }
+    UndoRedoSave();
 }
 
 MyApp::MyApp() : GuiApp("MyApp")
@@ -128,6 +93,7 @@ void MyApp::Dockspace()
         SelectTab("Simulation");
         initialSetup = true;
         ImGui::SetWindowFocus("Diagram");
+        ResetDocDeque();
     }
 }
 
@@ -151,7 +117,9 @@ void MyApp::MenuFile()
             // TODO want to save the current project?
             SetTitle("new");
             hasFile = false;
+            SetAsterisk(false);
             coreDiagram = std::make_unique<CoreDiagram>();
+            ResetDocDeque();
         }
         if (ImGui::MenuItem("Open", nullptr, false, true))
         {
@@ -163,17 +131,7 @@ void MyApp::MenuFile()
         }
         if (ImGui::MenuItem("Save", nullptr, false, true))
         {
-            if (hasFile == false)
-            {
-                fileDialogOpen = true;
-                fileDialog.SetType(FileDialog::Type::SAVE);
-                fileDialog.SetFileName("untitled");
-                fileDialog.SetDirectory(std::filesystem::current_path());
-            }
-            else
-            {
-                SaveProject(GetTitle(), filePath.string());
-            }
+            SaveButtonClick();
         }
         if (ImGui::MenuItem("Save As...", nullptr, false, true))
         {
@@ -213,16 +171,16 @@ void MyApp::DrawFileDialog()
     {
         if (fileDialog.GetType() == FileDialog::Type::OPEN)
         {
-            LoadProject();
+            LoadFromFile();
         }
         else if (fileDialog.GetType() == FileDialog::Type::SAVE)
         {
-            SaveProject(fileDialog.GetFileName().string(), fileDialog.GetResultPath().string());
+            SaveToFile(fileDialog.GetFileName().string(), fileDialog.GetResultPath().string());
         }
     }
 }
 
-void MyApp::SaveProject(const std::string& fName, const std::string& fPath)
+pugi::xml_document MyApp::CreateDoc() const
 {
     pugi::xml_document doc;
     auto declarationNode = doc.append_child(pugi::node_declaration);
@@ -238,13 +196,34 @@ void MyApp::SaveProject(const std::string& fName, const std::string& fPath)
     sim.append_attribute("stopTime").set_value(5.0);
     sim.append_attribute("speed").set_value("realTime");
     coreDiagram->Save(root);
+    return doc;
+}
 
+void MyApp::SaveButtonClick()
+{
+    if (hasFile == false)
+    {
+        fileDialogOpen = true;
+        fileDialog.SetType(FileDialog::Type::SAVE);
+        fileDialog.SetFileName("untitled");
+        fileDialog.SetDirectory(std::filesystem::current_path());
+    }
+    else
+    {
+        SaveToFile(GetTitle(), filePath.string());
+    }
+}
+
+void MyApp::SaveToFile(const std::string& fName, const std::string& fPath)
+{
+    auto doc = CreateDoc();
     if (doc.save_file(fPath.c_str(), PUGIXML_TEXT("  ")))
     {
         filePath = fPath;
         hasFile = true;
         SetTitle(fName);
         SetAsterisk(false);
+        iSavedDoc = iCurrentDoc;
         Notifier::Add(Notif(Notif::Type::SUCCESS, "Saved"));
     }
     else
@@ -253,7 +232,15 @@ void MyApp::SaveProject(const std::string& fName, const std::string& fPath)
     }
 }
 
-void MyApp::LoadProject()
+void MyApp::LoadDoc(const pugi::xml_document* doc)
+{
+    pugi::xml_node root = doc->document_element();
+    // TODO read simulation related parameters here.
+    coreDiagram = std::make_unique<CoreDiagram>();
+    coreDiagram->Load(root);
+}
+
+void MyApp::LoadFromFile()
 {
     auto fPath = fileDialog.GetResultPath().string();
     auto fNameWFormat = fileDialog.GetFileName().string();
@@ -262,10 +249,9 @@ void MyApp::LoadProject()
     pugi::xml_parse_result result = doc.load_file(fPath.c_str(), pugi::parse_default | pugi::parse_declaration);
     if (result)
     {
-        pugi::xml_node root = doc.document_element();
         // TODO check version.
-        coreDiagram = std::make_unique<CoreDiagram>();
-        coreDiagram->Load(root);
+        LoadDoc(&doc);
+        ResetDocDeque();
         filePath = fileDialog.GetResultPath();
         hasFile = true;
         SetTitle(fNameWoFormat);
@@ -283,6 +269,88 @@ void MyApp::SelectTab(const char* windowName) const
     ImGuiWindow* window = ImGui::FindWindowByName(windowName);
     if (window == nullptr || window->DockNode == nullptr || window->DockNode->TabBar == nullptr) { return; }
     window->DockNode->TabBar->NextSelectedTabId = window->TabId;
+}
+
+void MyApp::UndoRedoSave()
+{
+    // If project modified, add doc. TODO: other modifications
+    if (coreDiagram->GetModificationFlag() == true)
+    {
+        if (iCurrentDoc < docs.size() - 1)
+        {
+            docs.erase(docs.begin() + iCurrentDoc + 1, docs.end());
+        }
+        docs.emplace_back(CreateDoc());
+        iCurrentDoc += 1;
+        coreDiagram->ResetModificationFlag();
+        SetAsterisk(true);
+        if (docs.size() > maxSavedDoc)
+        {
+            docs.pop_front();
+            iCurrentDoc -= 1;
+            iSavedDoc -= 1;
+        }
+        return;
+    }
+
+    // Undo
+    const auto& io = ImGui::GetIO();
+    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z))
+    {
+        if (iCurrentDoc > 0)
+        {
+            auto doc = &(docs[iCurrentDoc - 1]);
+            iCurrentDoc -= 1;
+            LoadDoc(doc);
+            if (iCurrentDoc == iSavedDoc)
+            {
+                SetAsterisk(false);
+            }
+            else
+            {
+                SetAsterisk(true);
+            }
+            Notifier::Add(Notif(Notif::Type::SUCCESS, "Undo"));
+            return;
+        }
+        Notifier::Add(Notif(Notif::Type::INFO, "Cannot undo"));
+    }
+
+    // Redo
+    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y))
+    {
+        if (iCurrentDoc < docs.size() - 1)
+        {
+            auto doc = &(docs[iCurrentDoc + 1]);
+            iCurrentDoc += 1;
+            LoadDoc(doc);
+            if (iCurrentDoc == iSavedDoc)
+            {
+                SetAsterisk(false);
+            }
+            else
+            {
+                SetAsterisk(true);
+            }
+            Notifier::Add(Notif(Notif::Type::SUCCESS, "Redo"));
+            return;
+        }
+        Notifier::Add(Notif(Notif::Type::INFO, "Cannot redo"));
+    }
+
+    // Save
+    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S) && (iSavedDoc != iCurrentDoc || hasFile == false))
+    {
+        SaveButtonClick();
+    }
+}
+
+void MyApp::ResetDocDeque()
+{
+    docs.clear();
+    iCurrentDoc = 0;
+    iSavedDoc = 0;
+    docs.emplace_back(CreateDoc());
 }
 
 void MyApp::TestBasic() const

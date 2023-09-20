@@ -42,10 +42,18 @@ private:
 
     void DrawFileDialog();
 
-    void SaveProject(const std::string& fName, const std::string& fPath);
-    void LoadProject();
+    pugi::xml_document CreateDoc() const;
+    void SaveButtonClick();
+    void SaveToFile(const std::string& fName, const std::string& fPath);
+    void LoadDoc(const pugi::xml_document* doc);
+    void LoadFromFile();
 
     void SelectTab(const char* windowName) const;
 
-    std::deque<pugi::xml_document> xmls;
+    std::deque<pugi::xml_document> docs;
+    int iCurrentDoc{ 0 };
+    int iSavedDoc{ 0 };
+    const int maxSavedDoc{ 10 };
+    void UndoRedoSave();
+    void ResetDocDeque();
 };
