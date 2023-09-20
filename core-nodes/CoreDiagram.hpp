@@ -35,12 +35,12 @@ public:
     void Update();
     void Save(pugi::xml_node& xmlNode) const;
     void Load(const pugi::xml_node& xmlNode);
-    bool GetModificationFlag() const { return modificationFlag; }
-    void ResetModificationFlag() { modificationFlag = false; }
+    bool GetModifFlag() const { return modifFlag; }
+    void ResetModifFlag() { modifFlag = false; }
 
 private:
     bool mNodeDrag = false; // For node drag modification.
-    bool modificationFlag = false;
+    bool modifFlag = false; // Modification flag.
 
     CoreNodeLib coreNodeLib;
     State state = State::Default;

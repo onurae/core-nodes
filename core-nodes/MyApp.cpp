@@ -274,7 +274,7 @@ void MyApp::SelectTab(const char* windowName) const
 void MyApp::UndoRedoSave()
 {
     // If project modified, add doc. TODO: other modifications
-    if (coreDiagram->GetModificationFlag() == true)
+    if (coreDiagram->GetModifFlag() == true)
     {
         if (iCurrentDoc < docs.size() - 1)
         {
@@ -282,7 +282,7 @@ void MyApp::UndoRedoSave()
         }
         docs.emplace_back(CreateDoc());
         iCurrentDoc += 1;
-        coreDiagram->ResetModificationFlag();
+        coreDiagram->ResetModifFlag();
         SetAsterisk(true);
         if (docs.size() > maxSavedDoc)
         {

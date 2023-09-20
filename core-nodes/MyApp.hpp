@@ -53,7 +53,7 @@ private:
     std::deque<pugi::xml_document> docs;
     int iCurrentDoc{ 0 };
     int iSavedDoc{ 0 };
-    const int maxSavedDoc{ 10 };
+    const int maxSavedDoc{ 20 };
     void UndoRedoSave();
     void ResetDocDeque();
 };

@@ -217,7 +217,7 @@ void CoreDiagram::MouseLeftButtonDoubleClick()
                 hovNode->SetRectNode(rNode);
                 //iNode->Translate(ImVec2(0.0f, iNode->GetBodyHeight() * 0.5f));
             }
-            modificationFlag = true;
+            modifFlag = true;
         }
     }
     else if (state == State::HoveringInput) // Break connection
@@ -226,6 +226,7 @@ void CoreDiagram::MouseLeftButtonDoubleClick()
         {
             iNodeInput->BreakLink();
             EraseLink(iNodeInput);
+            modifFlag = true;
             state = State::DragingInput; // To be able to drag input after breaking.
         }
     }
@@ -241,6 +242,7 @@ void CoreDiagram::MouseLeftButtonDoubleClick()
                     {
                         input.BreakLink();
                         EraseLink(&input);
+                        modifFlag = true;
                     }
                 }
             }
@@ -260,6 +262,7 @@ void CoreDiagram::MouseRightButtonDoubleClick()
         if (titleArea.Contains(mousePos) && hovNode->GetFlagSet().HasFlag(NodeFlag::Collapsed) == false)
         {
             hovNode->InvertPort();
+            modifFlag = true;
         }
     }
     else if (state == State::HoveringNode)
@@ -327,6 +330,12 @@ void CoreDiagram::MouseLeftButtonSingleClick()
         else
         {
             state = State::Draging;
+
+            const ImGuiIO& io = ImGui::GetIO();
+            if (io.MouseDelta.x != 0.0f || io.MouseDelta.y != 0.0f)
+            {
+                mNodeDrag = true;
+            }
         }
     }
     else if (state == State::HoveringOutput)
@@ -432,7 +441,7 @@ void CoreDiagram::MouseLeftButtonRelease()
         state = State::HoveringNode; //SetState:HoveringNode
         if (mNodeDrag == true)
         {
-            modificationFlag = true;
+            modifFlag = true;
             mNodeDrag = false;
         }
     }
@@ -465,7 +474,7 @@ void CoreDiagram::MouseLeftButtonRelease()
             link.inputPort = iNodeInput;
             link.outputPort = iNodeOutput;
             linkVec.push_back(link);
-            modificationFlag = true;
+            modifFlag = true;
         }
 
         inputFreeLink = ImVec2();
@@ -549,6 +558,7 @@ void CoreDiagram::KeyboardPressDelete()
                 iNode = nullptr;
             }
             selectedNodes.push_back(node);
+            modifFlag = true;
         }
         else
         {
@@ -1106,7 +1116,7 @@ void CoreDiagram::Popups()
             {
                 ImVec2 pos = (mousePos - scroll - position) / scale;
                 coreNodeVec.push_back(CreateCoreNode(&node, pos));
-                modificationFlag = true;
+                modifFlag = true;
             }
         }
         ImGui::EndPopup();
