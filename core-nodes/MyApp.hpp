@@ -24,31 +24,35 @@ public:
 
 private:
     bool initialSetup = false;
-    bool hasFile = false;
-    std::filesystem::path filePath;
+    void SelectTab(const char* windowName) const;
     std::string version{ "v0.1.0" };
-    bool open = true;
-    bool redock = false;
-    bool fileDialogOpen = false;
-
     std::unique_ptr<CoreDiagram> coreDiagram;
-    FileDialog fileDialog;
 
+    bool openDockspace = true;
+    bool redock = false;
     void Dockspace();
+
     void Menu();
     void MenuFile();
     void MenuView();
     void MenuAbout();
 
+    FileDialog fileDialog;
+    bool fileDialogOpen = false;
     void DrawFileDialog();
 
+    bool hasFile = false;
+    std::filesystem::path filePath;
+    void NewProject();
+    void OpenProject();
+    bool openSaveModal = false;
+    bool stateSaveModal = true; // true: from new, false: from open.
+    void DrawSaveModal();
     pugi::xml_document CreateDoc() const;
-    void SaveButtonClick();
+    void SaveProject(bool saveAs = false);
     void SaveToFile(const std::string& fName, const std::string& fPath);
     void LoadDoc(const pugi::xml_document* doc);
     void LoadFromFile();
-
-    void SelectTab(const char* windowName) const;
 
     std::deque<pugi::xml_document> docs;
     int iCurrentDoc{ 0 };

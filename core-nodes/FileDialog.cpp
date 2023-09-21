@@ -25,7 +25,7 @@ bool FileDialog::Draw(bool* open)
     ImGui::SetNextWindowSize(ImVec2(660.0f, 410.0f), ImGuiCond_Once);
     ImGui::SetNextWindowSizeConstraints(ImVec2(410, 410), ImVec2(1080, 410));
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-    if (ImGui::BeginPopupModal(title.c_str(), open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBringToFrontOnFocus))
+    if (ImGui::BeginPopupModal(title.c_str(), open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking))
     {
         if (currentFiles.empty() && currentDirectories.empty() || refresh)
         {
