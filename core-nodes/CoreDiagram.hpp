@@ -29,15 +29,6 @@ enum class State
 
 class CoreDiagram
 {
-public:
-    CoreDiagram() = default;
-    virtual ~CoreDiagram();
-    void Update();
-    void Save(pugi::xml_node& xmlNode) const;
-    void Load(const pugi::xml_node& xmlNode);
-    bool GetModifFlag() const { return modifFlag; }
-    void ResetModifFlag() { modifFlag = false; }
-
 private:
     bool mNodeDrag = false; // For node drag modification.
     bool modifFlag = false; // Modification flag.
@@ -90,7 +81,7 @@ private:
     void UpdateOutputFlags(CoreNode* node);
     bool ConnectionRules([[maybe_unused]] const CoreNode* inputNode, const CoreNode* outputNode, const CoreNodeInput* input, const CoreNodeOutput* output) const;
     void SortNodeOrder();
-    void Popups();
+    void PopupMenu();
 
     // Network
     enum class LinkType;
@@ -172,6 +163,16 @@ private:
         NINV_LEFT_UNDER,
         NINV_LEFT_MID
     };
+
+public:
+    CoreDiagram() = default;
+    virtual ~CoreDiagram();
+    void Update();
+    void Save(pugi::xml_node & xmlNode) const;
+    void Load(const pugi::xml_node & xmlNode);
+    bool GetModifFlag() const { return modifFlag; }
+    void ResetModifFlag() { modifFlag = false; }
+    void DrawLibrary() { coreNodeLib.Draw(); }
 };
 
 #endif /* COREDIAGRAM_HPP */

@@ -75,7 +75,6 @@ void MyApp::Dockspace()
     ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
     Menu();
     ImGui::End();
 
@@ -85,7 +84,7 @@ void MyApp::Dockspace()
     ImGui::End();
 
     ImGui::Begin("Library", nullptr, ImGuiWindowFlags_None);
-    ImGui::Text("Text");
+    coreDiagram->DrawLibrary();
     ImGui::End();
 
     ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_None);

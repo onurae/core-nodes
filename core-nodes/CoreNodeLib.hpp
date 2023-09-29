@@ -72,9 +72,26 @@ public:
         std::vector<Port> inputs;
         std::vector<Port> outputs;
     };
-    const std::vector<Node>& Get() const { return nodeVec; }
+
+    void Draw();
+    Node* GetSelectedLeaf() const { return selectedLeaf; }
+    bool IsLeafClicked() const { return leafClicked; }
+    void SetLeafClickedFalse() { leafClicked = false; }
+    
 private:
-    std::vector<Node> nodeVec;
+    int iSelectedLeaf = -1;
+    int iSelectedBranch = -1;
+    std::string nameSelectedLeaf;
+    std::string nameSelectedBranch;
+    Node* selectedLeaf = nullptr;
+    bool leafClicked = false;
+    void DrawBranch(const std::string& branchName, int branchId, std::vector<CoreNodeLib::Node>& branchVec);
+
+    std::vector<Node> libMath;
+    void MathGain();
+    void MathAbs();
+
+    std::vector<Node> libTest;
     void Test();
     void GreatNode();
     void Node1();

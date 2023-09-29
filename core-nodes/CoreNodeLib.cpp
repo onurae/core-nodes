@@ -11,6 +11,9 @@
 
 CoreNodeLib::CoreNodeLib()
 {
+    MathGain();
+    MathAbs();
+
     Test();
     GreatNode();
     Node1();
@@ -20,6 +23,71 @@ CoreNodeLib::CoreNodeLib()
     LongNode();
     Sink();
     Source();
+}
+
+void CoreNodeLib::Draw()
+{
+    DrawBranch("Test", 0, libTest);
+    DrawBranch("Math", 1, libMath);
+    
+    if (leafClicked == true)
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text(std::string(nameSelectedBranch + " / " + nameSelectedLeaf).c_str());
+        ImGui::EndTooltip();
+    }
+}
+
+void CoreNodeLib::DrawBranch(const std::string& branchName, int branchId, std::vector<CoreNodeLib::Node>& branchVec)
+{
+    if (ImGui::TreeNodeEx(branchName.c_str(), ImGuiTreeNodeFlags_SpanFullWidth))
+    {
+        for (int i = 0; i < branchVec.size(); i++)
+        {
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
+            if (iSelectedLeaf == i && iSelectedBranch == branchId)
+            {
+                flags |= ImGuiTreeNodeFlags_Selected;
+            }
+            ImGui::TreeNodeEx((void*)(intptr_t)i, flags, branchVec.at(i).name.c_str());
+            if (ImGui::IsItemClicked())
+            {
+                iSelectedLeaf = i;
+                iSelectedBranch = branchId;
+                nameSelectedLeaf = branchVec.at(i).name;
+                nameSelectedBranch = branchName;
+                selectedLeaf = &branchVec.at(i);
+                leafClicked = true;
+            }
+        }
+        ImGui::TreePop();
+    }
+}
+
+void CoreNodeLib::MathGain()
+{
+    CoreNodeLib::Node node;
+    node.id = 1;
+    node.name = "Gain";
+    node.type = NodeType::Generic;
+    node.color = ImColor(0.2f, 0.3f, 0.6f, 0.0f);
+
+    node.inputs.push_back({ "Input", PortType::In , PortDataType::Double });
+    node.outputs.push_back({ "Output", PortType::Out, PortDataType::Double });
+    libMath.push_back(node);
+}
+
+void CoreNodeLib::MathAbs()
+{
+    CoreNodeLib::Node node;
+    node.id = 1;
+    node.name = "Abs";
+    node.type = NodeType::Generic;
+    node.color = ImColor(0.2f, 0.3f, 0.6f, 0.0f);
+
+    node.inputs.push_back({ "Input", PortType::In , PortDataType::Double });
+    node.outputs.push_back({ "Output", PortType::Out, PortDataType::Double });
+    libMath.push_back(node);
 }
 
 void CoreNodeLib::Test()
@@ -36,7 +104,7 @@ void CoreNodeLib::Test()
 
     node.outputs.push_back({ "Awesome", PortType::Out, PortDataType::Float });
     node.outputs.push_back({ "Signal", PortType::Out, PortDataType::Double });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::GreatNode()
@@ -52,7 +120,7 @@ void CoreNodeLib::GreatNode()
 
     node.outputs.push_back({ "Float", PortType::Out, PortDataType::Float });
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::Node1()
@@ -79,7 +147,7 @@ void CoreNodeLib::Node1()
     node.outputs.push_back({ "Text", PortType::Out, PortDataType::Text });
     node.outputs.push_back({ "", PortType::None, PortDataType::Generic });
     node.outputs.push_back({ "Int", PortType::Out, PortDataType::Int });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::Node2()
@@ -107,7 +175,7 @@ void CoreNodeLib::Node2()
     node.outputs.push_back({ "", PortType::None, PortDataType::Generic });
     node.outputs.push_back({ "", PortType::None, PortDataType::Generic });
     node.outputs.push_back({ "Generic", PortType::Out, PortDataType::Generic });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::NiceNode()
@@ -123,7 +191,7 @@ void CoreNodeLib::NiceNode()
 
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::NicerNode()
@@ -141,7 +209,7 @@ void CoreNodeLib::NicerNode()
     node.outputs.push_back({ "Float", PortType::Out, PortDataType::Float });
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::LongNode()
@@ -166,7 +234,7 @@ void CoreNodeLib::LongNode()
     node.outputs.push_back({ "Float", PortType::Out, PortDataType::Float });
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
     node.outputs.push_back({ "Double", PortType::Out, PortDataType::Double });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::Sink()
@@ -179,7 +247,7 @@ void CoreNodeLib::Sink()
 
     node.inputs.push_back({ "In", PortType::In, PortDataType::Double });
     node.outputs.push_back({ "", PortType::None, PortDataType::Generic });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }
 
 void CoreNodeLib::Source()
@@ -192,5 +260,5 @@ void CoreNodeLib::Source()
 
     node.inputs.push_back({ "", PortType::None, PortDataType::Generic });
     node.outputs.push_back({ "Out", PortType::Out, PortDataType::Double });
-    nodeVec.push_back(node);
+    libTest.push_back(node);
 }

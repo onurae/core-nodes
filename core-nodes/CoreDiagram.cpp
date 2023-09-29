@@ -25,7 +25,7 @@ void CoreDiagram::Update()
     UpdateNodeFlags(); // Sets hovNode.
     Actions();
     DrawCanvasElements();
-    Popups();
+    PopupMenu();
 }
 
 void CoreDiagram::Save(pugi::xml_node& xmlNode) const
@@ -430,7 +430,24 @@ void CoreDiagram::MouseLeftButtonDrag()
 
 void CoreDiagram::MouseLeftButtonRelease()
 {
-    if (state == State::Selecting)
+    if (state == State::None)
+    {
+        if (coreNodeLib.IsLeafClicked() == true) // If a leaf clicked then released on the outside of canvas.
+        {
+            coreNodeLib.SetLeafClickedFalse();
+        }
+    }
+    else if (state == State::Default)
+    {
+        if (coreNodeLib.IsLeafClicked() == true) // If a leaf clicked then released on the canvas, create the leaf.
+        {
+            ImVec2 pos = (mousePos - scroll - position) / scale;
+            coreNodeVec.push_back(CreateCoreNode(coreNodeLib.GetSelectedLeaf(), pos));
+            modifFlag = true;
+            coreNodeLib.SetLeafClickedFalse();
+        }
+    }
+    else if (state == State::Selecting)
     {
         rectSelecting = ImRect();
         SortNodeOrder();
@@ -485,14 +502,13 @@ void CoreDiagram::MouseLeftButtonRelease()
 
 void CoreDiagram::MouseRightButtonRelease()
 {
-    // Open menu, temporary.
+    // Open diagram popup menu.
     const ImGuiIO& io = ImGui::GetIO();
     if (state != State::None && rectCanvas.Contains(mousePos) && ImGui::IsMouseDown(0) == false && ImGui::IsMouseReleased(1) && iNode == nullptr)
     {
         if (io.MouseDragMaxDistanceSqr[1] < (io.MouseDragThreshold * io.MouseDragThreshold))
         {
             bool selected = false;
-
             for (int node_idx = 0; node_idx < coreNodeVec.size(); ++node_idx)
             {
                 if (coreNodeVec[node_idx]->GetFlagSet().HasFlag(NodeFlag::Selected))
@@ -501,9 +517,10 @@ void CoreDiagram::MouseRightButtonRelease()
                     break;
                 }
             }
-
-            if (false == selected) // TODO
-                ImGui::OpenPopup("NodesContextMenu");
+            if (false == selected)
+            {
+                ImGui::OpenPopup("DiagramPopupMenu");
+            }
         }
     }
 }
@@ -1104,20 +1121,15 @@ void CoreDiagram::SortNodeOrder()
     }
 }
 
-void CoreDiagram::Popups()
+void CoreDiagram::PopupMenu()
 {
-    // Menu popup, temporary.
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-    if (ImGui::BeginPopup("NodesContextMenu"))
+    if (ImGui::BeginPopup("DiagramPopupMenu"))
     {
-        for (const auto& node : coreNodeLib.Get())
+        if (ImGui::MenuItem("Home"))
         {
-            if (ImGui::MenuItem(node.name.c_str()))
-            {
-                ImVec2 pos = (mousePos - scroll - position) / scale;
-                coreNodeVec.push_back(CreateCoreNode(&node, pos));
-                modifFlag = true;
-            }
+            scroll = {};
+            scale = 1.0f;
         }
         ImGui::EndPopup();
     }
