@@ -24,6 +24,8 @@ CoreNode* CoreLibrary::GetNode(const std::string& libName, const std::string& un
 
 void CoreLibrary::Draw()
 {
+    DrawTooltip();
+
     int id = 0; // Branch id.
     if (ImGui::TreeNode("DynDx"))
     {
@@ -42,6 +44,16 @@ void CoreLibrary::Draw()
     }
 
     DrawBranch("Math", id, libMath);
+}
+
+void CoreLibrary::DrawTooltip() const
+{
+    if (leafClicked == true)
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text(std::string(selectedBranch + " / " + selectedLeaf).c_str());
+        ImGui::EndTooltip();
+    }
 }
 
 void CoreLibrary::DrawBranch(const std::string& name, int& id, const std::vector<std::string>& vec)

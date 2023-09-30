@@ -25,6 +25,7 @@ private:
     std::string selectedBranch;
     bool leafClicked = false;
     void DrawBranch(const std::string& name, int& id, const std::vector<std::string>& vec);
+    void DrawTooltip() const;
 public:
     CoreLibrary() = default;
     virtual ~CoreLibrary() = default;
