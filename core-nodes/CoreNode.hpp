@@ -24,12 +24,19 @@ struct NodeFlag
     static const unsigned int Highlighted = 1 << 5;
 };
 
+enum class NodeType
+{
+    None = 0,
+    Generic, // TODO change to core module?
+    CoreIn, // maybe
+    CoreOut // maybe
+};
+
 class CoreNode
 {
 private:
-    int id;
     std::string name;
-    std::string libName; // TODO canvasta node kopyalarken ise yarar.
+    std::string libName;
     NodeType type;
     ImColor colorNode;
     ImColor colorHead;
@@ -50,12 +57,23 @@ private:
     ImVec2 leftPortPos;
     ImVec2 rightPortPos;
     bool portInverted = false;
+
+    float inputsWidth = 0.0f;
+    float inputsHeight = 0.0f;
+    float outputsWidth = 0.0f;
+    float outputsHeight = 0.0f;
+
 public:
     CoreNode() = default;
-    CoreNode(int id, const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
+    CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
     virtual ~CoreNode() = default;
     void Save(pugi::xml_node& xmlNode) const;
     void Load(const pugi::xml_node& xmlNode);
+
+
+    void AddInput(CoreNodeInput& input);
+    void AddOutput(CoreNodeOutput& output);
+    virtual void DrawProperties() {}; // TODO make it pure virtual
 
     std::string GetName() const { return name; }
     NodeType GetType() const { return type; };
@@ -68,7 +86,8 @@ public:
     std::vector<CoreNodeInput>& GetInputVec() { return inputVec; }
     const std::vector<CoreNodeInput>& GetInputVec() const { return inputVec; }
     std::vector<CoreNodeOutput>& GetOutputVec() { return outputVec; }
-    void BuildGeometry(float inputsWidth, float inputsHeight, float outputsWidth, float outputsHeight);
+
+    void BuildGeometry();
     void Translate(ImVec2 delta, bool selectedOnly = false);
     void Draw(ImDrawList* drawList, ImVec2 offset, float scale) const;
     void InvertPort();

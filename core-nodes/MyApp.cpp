@@ -92,7 +92,7 @@ void MyApp::Dockspace()
     ImGui::End();
 
     ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_None);
-    ImGui::Text("Text");
+    coreDiagram->DrawProperties();
     ImGui::End();
 
     if (initialSetup == false)

@@ -10,7 +10,7 @@
 #ifndef COREDIAGRAM_HPP
 #define COREDIAGRAM_HPP
 
-#include "CoreNode.hpp"
+#include "CoreLibrary.hpp"
 #include <set>
 #include <cmath>
 
@@ -33,7 +33,7 @@ private:
     bool mNodeDrag = false; // For node drag modification.
     bool modifFlag = false; // Modification flag.
 
-    CoreNodeLib coreNodeLib;
+    CoreLibrary coreLib;
     State state = State::Default;
     float scale = 1.0f;
     ImVec2 position;
@@ -44,7 +44,6 @@ private:
     CoreNode* highlightedNode = nullptr;
     void HighlightNode();
     std::string CreateUniqueName(const std::string& libName) const;
-    CoreNode* CreateCoreNode(const CoreNodeLib::Node* node, ImVec2 pos);
 
     // Update canvas
     ImRect rectCanvas;
@@ -172,7 +171,8 @@ public:
     void Load(const pugi::xml_node & xmlNode);
     bool GetModifFlag() const { return modifFlag; }
     void ResetModifFlag() { modifFlag = false; }
-    void DrawLibrary() { coreNodeLib.Draw(); }
+    void DrawLibrary() { coreLib.Draw(); }
+    void DrawProperties();
 };
 
 #endif /* COREDIAGRAM_HPP */

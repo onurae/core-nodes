@@ -97,6 +97,14 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
     }
 }
 
+void CoreDiagram::DrawProperties()
+{
+    if (highlightedNode != nullptr)
+    {
+        highlightedNode->DrawProperties();
+    }
+}
+
 void CoreDiagram::Actions()
 {
     MouseMove();
@@ -432,19 +440,35 @@ void CoreDiagram::MouseLeftButtonRelease()
 {
     if (state == State::None)
     {
-        if (coreNodeLib.IsLeafClicked() == true) // If a leaf clicked then released on the outside of canvas.
+        if (coreLib.IsLeafClicked() == true) // If a leaf clicked then released on the outside of canvas.
         {
-            coreNodeLib.SetLeafClickedFalse();
+            coreLib.SetLeafClickedFalse();
         }
     }
     else if (state == State::Default)
     {
-        if (coreNodeLib.IsLeafClicked() == true) // If a leaf clicked then released on the canvas, create the leaf.
+        if (coreLib.IsLeafClicked() == true) // If a leaf clicked then released on the canvas, create the leaf.
         {
-            ImVec2 pos = (mousePos - scroll - position) / scale;
-            coreNodeVec.push_back(CreateCoreNode(coreNodeLib.GetSelectedLeaf(), pos));
-            modifFlag = true;
-            coreNodeLib.SetLeafClickedFalse();
+            auto leafName = coreLib.GetSelectedLeaf();
+            auto newNode = coreLib.GetNode(leafName, CreateUniqueName(leafName));
+            if (newNode != nullptr)
+            {
+                ImVec2 pos = (mousePos - scroll - position) / scale;
+                newNode->Translate(pos - newNode->GetRectNode().GetCenter());
+                newNode->GetFlagSet().SetFlag(NodeFlag::Visible | NodeFlag::Hovered | NodeFlag::Highlighted);
+                coreNodeVec.push_back(newNode);
+                if (highlightedNode != nullptr)
+                {
+                    highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
+                }
+                highlightedNode = newNode;
+                modifFlag = true;
+                coreLib.SetLeafClickedFalse();
+            }
+            else
+            {
+                Notifier::Add(Notif(Notif::Type::ERROR, "[" + leafName + "]" + " not found in the library!"));
+            }
         }
     }
     else if (state == State::Selecting)
@@ -1031,43 +1055,6 @@ std::string CoreDiagram::CreateUniqueName(const std::string& libName) const
         }
     }
     return name;
-}
-
-CoreNode* CoreDiagram::CreateCoreNode(const CoreNodeLib::Node* node, ImVec2 pos)
-{
-    auto newNode = new CoreNode(node->id, CreateUniqueName(node->name), node->name, node->type, node->color);
-
-    float inputsWidth = 0.0f;
-    float inputsHeight = 0.0f;
-    float outputsWidth = 0.0f;
-    float outputsHeight = 0.0f;
-    int inOrder = 0;
-    for (const auto& in : node->inputs)
-    {
-        CoreNodeInput input(in.name, in.type, in.dataType, inOrder);
-        inputsWidth = ImMax(inputsWidth, input.GetRectPort().GetWidth());
-        inputsHeight += input.GetRectPort().GetHeight();
-        newNode->GetInputVec().push_back(input);
-        inOrder += 1;
-    }
-    int outOrder = 0;
-    for (const auto& out : node->outputs)
-    {
-        CoreNodeOutput output(out.name, out.type, out.dataType, outOrder);
-        outputsWidth = ImMax(outputsWidth, output.GetRectPort().GetWidth());
-        outputsHeight += output.GetRectPort().GetHeight();
-        newNode->GetOutputVec().push_back(output);
-        outOrder += 1;
-    }
-    newNode->BuildGeometry(inputsWidth, inputsHeight, outputsWidth, outputsHeight);
-    newNode->Translate(pos - newNode->GetRectNode().GetCenter());
-    newNode->GetFlagSet().SetFlag(NodeFlag::Visible | NodeFlag::Hovered | NodeFlag::Highlighted);
-    if (highlightedNode != nullptr)
-    {
-        highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
-    }
-    highlightedNode = newNode;
-    return highlightedNode;
 }
 
 bool CoreDiagram::ConnectionRules([[maybe_unused]] const CoreNode* inputNode, const CoreNode* outputNode, const CoreNodeInput* input, const CoreNodeOutput* output) const

@@ -9,7 +9,23 @@
 
 #include "CoreNode.hpp"
 
-CoreNode::CoreNode(int id, const std::string& name, const std::string& libName, NodeType type, ImColor colorNode) : id(id), name(name), libName(libName), type(type), colorNode(colorNode)
+void CoreNode::AddInput(CoreNodeInput& input)
+{
+    inputsWidth = ImMax(inputsWidth, input.GetRectPort().GetWidth());
+    inputsHeight += input.GetRectPort().GetHeight();
+    input.SetOrder(static_cast<int>(inputVec.size()));
+    inputVec.push_back(input);
+}
+
+void CoreNode::AddOutput(CoreNodeOutput& output)
+{
+    outputsWidth = ImMax(outputsWidth, output.GetRectPort().GetWidth());
+    outputsHeight += output.GetRectPort().GetHeight();
+    output.SetOrder(static_cast<int>(outputVec.size()));
+    outputVec.push_back(output);
+}
+
+CoreNode::CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode) : name(name), libName(libName), type(type), colorNode(colorNode)
 {
     flagSet.SetFlag(NodeFlag::Default);
     rectName.Min = ImVec2(0.0f, 0.0f);
@@ -28,7 +44,6 @@ void CoreNode::Save(pugi::xml_node& xmlNode) const
 {
     auto node = xmlNode.append_child("node");
     node.append_attribute("name") = name.c_str();
-    SaveInt(node, "id", id);
     SaveString(node, "libName", libName);
     SaveInt(node, "type", (int)type);
     SaveImColor(node, "colorNode", colorNode);
@@ -58,7 +73,6 @@ void CoreNode::Save(pugi::xml_node& xmlNode) const
 
 void CoreNode::Load(const pugi::xml_node& xmlNode)
 {
-    id = LoadInt(xmlNode, "id");
     name = xmlNode.attribute("name").as_string();
     libName = LoadString(xmlNode, "libName");
     type = (NodeType)LoadInt(xmlNode, "type");
@@ -134,7 +148,7 @@ void CoreNode::InvertPort()
     }
 }
 
-void CoreNode::BuildGeometry(float inputsWidth, float inputsHeight, float outputsWidth, float outputsHeight)
+void CoreNode::BuildGeometry()
 {
     bodyHeight = ImMax(inputsHeight, outputsHeight) + kVerticalTop * rectName.GetHeight() + kVerticalBottom * rectName.GetHeight();
     rectNode.Min = ImVec2(0.0f, 0.0f);

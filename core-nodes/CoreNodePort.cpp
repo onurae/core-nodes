@@ -9,8 +9,8 @@
 
 #include "CoreNodePort.hpp"
 
-CoreNodeInput::CoreNodeInput(const std::string& name, PortType type, PortDataType dataType, int order) :
-    name(name), type(type), dataType(dataType), order(order)
+CoreNodeInput::CoreNodeInput(const std::string& name, PortType type, PortDataType dataType) :
+    name(name), type(type), dataType(dataType)
 {
     flagSet.SetFlag(PortFlag::Default);
 
@@ -216,8 +216,8 @@ void CoreNodeInput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) const
     }
 }
 
-CoreNodeOutput::CoreNodeOutput(const std::string& name, PortType type, PortDataType dataType, int order) :
-    name(name), type(type), dataType(dataType), order(order)
+CoreNodeOutput::CoreNodeOutput(const std::string& name, PortType type, PortDataType dataType) :
+    name(name), type(type), dataType(dataType)
 {
     flagSet.SetFlag(PortFlag::Default);
 
