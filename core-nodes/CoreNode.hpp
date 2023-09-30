@@ -57,23 +57,24 @@ private:
     ImVec2 leftPortPos;
     ImVec2 rightPortPos;
     bool portInverted = false;
-
     float inputsWidth = 0.0f;
     float inputsHeight = 0.0f;
     float outputsWidth = 0.0f;
     float outputsHeight = 0.0f;
 
+protected:
+    void AddInput(CoreNodeInput& input);
+    void AddOutput(CoreNodeOutput& output);
+    void BuildGeometry();
+    virtual void SaveProperties(pugi::xml_node& xmlNode) = 0;
+    virtual void LoadProperties(pugi::xml_node& xmlNode) = 0;
+
 public:
     CoreNode() = default;
     CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
     virtual ~CoreNode() = default;
-    void Save(pugi::xml_node& xmlNode) const;
+    void Save(pugi::xml_node& xmlNode);
     void Load(const pugi::xml_node& xmlNode);
-
-
-    void AddInput(CoreNodeInput& input);
-    void AddOutput(CoreNodeOutput& output);
-    virtual void DrawProperties() {}; // TODO make it pure virtual
 
     std::string GetName() const { return name; }
     NodeType GetType() const { return type; };
@@ -87,11 +88,13 @@ public:
     const std::vector<CoreNodeInput>& GetInputVec() const { return inputVec; }
     std::vector<CoreNodeOutput>& GetOutputVec() { return outputVec; }
 
-    void BuildGeometry();
     void Translate(ImVec2 delta, bool selectedOnly = false);
     void Draw(ImDrawList* drawList, ImVec2 offset, float scale) const;
     void InvertPort();
     bool IsPortInverted() const { return portInverted; }
+
+    virtual void Build() = 0;
+    virtual void DrawProperties() = 0;
 };
 
 #endif /* CORENODE_HPP */

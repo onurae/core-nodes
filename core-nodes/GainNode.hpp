@@ -15,25 +15,16 @@
 class GainNode : public CoreNode
 {
 public:
-    explicit GainNode(const std::string& uniqueName);
-    ~GainNode() final = default;
+    explicit GainNode(const std::string& uniqueName) : CoreNode(uniqueName, "Gain", NodeType::Generic, ImColor(0.2f, 0.3f, 0.6f, 0.0f)) {};
+    ~GainNode() override = default;
 
-    void DrawProperties() override
-    {
-        ImGui::Text(GetName().c_str());
-        ImGui::Separator();
-        ImGui::Text("Outputs input times parameter.");
-        ImGui::NewLine();
-        ImGui::Text("Parameters");
-        ImGui::Separator();
-        gainStr.resize(13);
-        gainStr = std::to_string(gain);
-        ImGui::InputText("gain", gainStr.data(), 12, ImGuiInputTextFlags_CharsDecimal);
-        gain = std::stod(gainStr); // exception atiyo
-    };
+    void Build() override;
+    void DrawProperties() override;
+
+    void SaveProperties(pugi::xml_node& xmlNode) override;
+    void LoadProperties(pugi::xml_node& xmlNode) override;
 private:
     double gain = 1.0;
-    std::string gainStr = "1.0";
 };
 
 #endif /* GAINNODE_HPP */

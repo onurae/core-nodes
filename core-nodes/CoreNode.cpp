@@ -40,7 +40,7 @@ CoreNode::CoreNode(const std::string& name, const std::string& libName, NodeType
     colorBody = ImColor(0.0f, 0.0f, 0.0f, 0.75f);
 }
 
-void CoreNode::Save(pugi::xml_node& xmlNode) const
+void CoreNode::Save(pugi::xml_node& xmlNode)
 {
     auto node = xmlNode.append_child("node");
     node.append_attribute("name") = name.c_str();
@@ -69,6 +69,12 @@ void CoreNode::Save(pugi::xml_node& xmlNode) const
     SaveImVec2(node, "leftPortPos", leftPortPos);
     SaveImVec2(node, "rightPortPos", rightPortPos);
     SaveBool(node, "portInverted", portInverted);
+    SaveFloat(node, "inputsWidth", inputsWidth);
+    SaveFloat(node, "inputsHeight", inputsHeight);
+    SaveFloat(node, "outputsWidth", outputsWidth);
+    SaveFloat(node, "outputsHeight", outputsHeight);
+
+    SaveProperties(node.append_child("properties"));
 }
 
 void CoreNode::Load(const pugi::xml_node& xmlNode)
@@ -101,6 +107,12 @@ void CoreNode::Load(const pugi::xml_node& xmlNode)
     leftPortPos = LoadImVec2(xmlNode, "leftPortPos");
     rightPortPos = LoadImVec2(xmlNode, "rightPortPos");
     portInverted = LoadBool(xmlNode, "portInverted");
+    inputsWidth = LoadFloat(xmlNode, "inputsWidth");
+    inputsHeight = LoadFloat(xmlNode, "inputsHeight");
+    outputsWidth = LoadFloat(xmlNode, "outputsWidth");
+    outputsHeight = LoadFloat(xmlNode, "outputsHeight");
+
+    LoadProperties(xmlNode.child("properties"));
 }
 
 void CoreNode::Translate(ImVec2 delta, bool selectedOnly)

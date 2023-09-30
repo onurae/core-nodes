@@ -62,7 +62,8 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
     outputFreeLink = ImVec2();
     for (const auto& element : node.child("nodeList").children("node"))
     {
-        coreNodeVec.emplace_back(new CoreNode());
+        // Add node without building.
+        coreNodeVec.push_back(coreLib.GetNode(LoadString(element, "libName"), LoadString(element, "name")));
         coreNodeVec.back()->Load(element);
     }
     for (const auto& element : node.child("linkList").children("link"))
@@ -453,6 +454,7 @@ void CoreDiagram::MouseLeftButtonRelease()
             auto newNode = coreLib.GetNode(leafName, CreateUniqueName(leafName));
             if (newNode != nullptr)
             {
+                newNode->Build();
                 ImVec2 pos = (mousePos - scroll - position) / scale;
                 newNode->Translate(pos - newNode->GetRectNode().GetCenter());
                 newNode->GetFlagSet().SetFlag(NodeFlag::Visible | NodeFlag::Hovered | NodeFlag::Highlighted);
@@ -468,6 +470,7 @@ void CoreDiagram::MouseLeftButtonRelease()
             else
             {
                 Notifier::Add(Notif(Notif::Type::ERROR, "[" + leafName + "]" + " not found in the library!"));
+                coreLib.SetLeafClickedFalse();
             }
         }
     }

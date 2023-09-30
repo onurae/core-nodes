@@ -56,6 +56,7 @@ void SaveImRect(pugi::xml_node& xmlNode, const std::string& name, const ImRect& 
 void SaveImVec2(pugi::xml_node& xmlNode, const std::string& name, const ImVec2& vec);
 void SaveImColor(pugi::xml_node& xmlNode, const std::string& name, const ImColor& color);
 void SaveFloat(pugi::xml_node& xmlNode, const std::string& name, float data);
+void SaveDouble(pugi::xml_node& xmlNode, const std::string& name, double data);
 void SaveString(pugi::xml_node& xmlNode, const std::string& name, const std::string& str);
 void SaveInt(pugi::xml_node& xmlNode, const std::string& name, int i);
 void SaveBool(pugi::xml_node& xmlNode, const std::string& name, bool b);
@@ -64,6 +65,7 @@ ImRect LoadImRect(const pugi::xml_node& xmlNode, const std::string& name);
 ImVec2 LoadImVec2(const pugi::xml_node& xmlNode, const std::string& name);
 ImColor LoadImColor(const pugi::xml_node& xmlNode, const std::string& name);
 float LoadFloat(const pugi::xml_node& xmlNode, const std::string& name);
+double LoadDouble(const pugi::xml_node& xmlNode, const std::string& name);
 std::string LoadString(const pugi::xml_node& xmlNode, const std::string& name);
 int LoadInt(const pugi::xml_node& xmlNode, const std::string& name);
 bool LoadBool(const pugi::xml_node& xmlNode, const std::string& name);
