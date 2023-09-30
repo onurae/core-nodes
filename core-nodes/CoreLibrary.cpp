@@ -12,21 +12,12 @@
 CoreNode* CoreLibrary::GetNode(const std::string& libName, const std::string& uniqueName)
 {
     if (libName == "Gain")
-    { 
-        auto node = new GainNode(uniqueName);
-        return node;
+    {
+        return new GainNode(uniqueName);
     }
     if (libName == "Test")
     {
-        //auto node = new CoreNode(uniqueName, "Test", NodeType::Generic, ImColor(0.2f, 0.3f, 0.6f, 0.0f));
-        //node->AddInput(CoreNodeInput("Input1", PortType::In, PortDataType::Float));
-        //node->AddInput(CoreNodeInput("Input2", PortType::In, PortDataType::Double));
-        //node->AddInput(CoreNodeInput("Input3", PortType::In, PortDataType::Double));
-        //node->AddInput(CoreNodeInput("Input4", PortType::In, PortDataType::Double));
-        //node->AddOutput(CoreNodeOutput("Output1", PortType::Out, PortDataType::Float));
-        //node->AddOutput(CoreNodeOutput("Output2", PortType::Out, PortDataType::Double));
-        //node->BuildGeometry();
-        //return node;
+        return new TestNode(uniqueName);
     }
     return nullptr;
 }

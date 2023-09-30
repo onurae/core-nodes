@@ -12,6 +12,7 @@
 
 #include "CoreNode.hpp"
 #include "GainNode.hpp"
+#include "TestNode.hpp"
 
 class CoreLibrary
 {
