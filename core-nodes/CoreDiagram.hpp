@@ -36,6 +36,8 @@ private:
     CoreLibrary coreLib;
     State state = State::Default;
     float scale = 1.0f;
+    const float scaleMin = 0.10f;
+    const float scaleMax = 2.0f;
     ImVec2 position;
     ImVec2 size;
     ImVec2 scroll;
@@ -81,6 +83,7 @@ private:
     bool ConnectionRules([[maybe_unused]] const CoreNode* inputNode, const CoreNode* outputNode, const CoreNodeInput* input, const CoreNodeOutput* output) const;
     void SortNodeOrder();
     void PopupMenu();
+    void FitToWindow();
 
     // Network
     enum class LinkType;

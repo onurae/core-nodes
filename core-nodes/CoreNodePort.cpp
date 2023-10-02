@@ -119,8 +119,8 @@ void CoreNodeInput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) const
     ImGui::SetCursorScreenPos((rectName.Min * scale) + offset);
     ImGui::Text(name.c_str());
 
-    // Show type if hovered.
-    if (flagSet.Equal(PortFlag::Hovered) && targetNode == nullptr)
+    // Show type.
+    if (flagSet.Equal(PortFlag::Draging) && targetNode == nullptr)
     {
         std::string typeName = portTypeNames.at(static_cast<int>(dataType));
         ImVec2 typeNameSize = ImGui::CalcTextSize(typeName.c_str());
@@ -156,7 +156,7 @@ void CoreNodeInput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) const
 
     float distTri = radius1 * 1.6f;
     float triLength = radius1;
-    if (flagSet.Equal(PortFlag::Hovered) && type == PortType::In && targetNode == nullptr)
+    if (flagSet.Equal(PortFlag::Draging) && type == PortType::In && targetNode == nullptr)
     {
         if (inverted == false)
         {
@@ -169,7 +169,7 @@ void CoreNodeInput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) const
             drawList->AddTriangleFilled(loc + ImVec2(triLength, triLength), loc + ImVec2(triLength, -triLength), loc, color4);
         }
     }
-    else if (flagSet.Equal(PortFlag::Hovered) && type == PortType::Ic && targetNode == nullptr)
+    else if (flagSet.Equal(PortFlag::Draging) && type == PortType::Ic && targetNode == nullptr)
     {
         if (inverted == false)
         {
@@ -303,8 +303,8 @@ void CoreNodeOutput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) cons
     ImGui::SetCursorScreenPos((rectName.Min * scale) + offset);
     ImGui::Text(name.c_str());
 
-    // Show type if hovered.
-    if (flagSet.Equal(PortFlag::Hovered) && linkNum == 0)
+    // Show type.
+    if (flagSet.Equal(PortFlag::Draging) && linkNum == 0)
     {
         std::string typeName = portTypeNames.at(static_cast<int>(dataType));
         ImVec2 typeNameSize = ImGui::CalcTextSize(typeName.c_str());
@@ -340,7 +340,7 @@ void CoreNodeOutput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) cons
 
     float distTri = radius1 * 1.6f;
     float triLength = radius1;
-    if (flagSet.Equal(PortFlag::Hovered) && type == PortType::Out && linkNum == 0)
+    if (flagSet.Equal(PortFlag::Draging) && type == PortType::Out && linkNum == 0)
     {
         if (inverted == false)
         {

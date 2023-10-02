@@ -87,7 +87,6 @@ void CoreNode::Load(const pugi::xml_node& xmlNode)
     colorLine = LoadImColor(xmlNode, "colorLine");
     colorBody = LoadImColor(xmlNode, "colorBody");
     flagSet.SetInt(LoadInt(xmlNode, "flagSet"));
-    flagSet.UnsetFlag(NodeFlag::Highlighted);   // Unset highlighted flag.
     flagSet.UnsetFlag(NodeFlag::Hovered);       // Unset hovered flag.
     rectNode = LoadImRect(xmlNode, "rectNode");
     rectNodeTitle = LoadImRect(xmlNode, "rectNodeTitle");
