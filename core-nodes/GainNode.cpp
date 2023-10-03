@@ -24,20 +24,17 @@ void GainNode::DrawProperties()
     ImGui::NewLine();
     ImGui::Text("Parameters");
     ImGui::Separator();
-    // TODO size of input text and gain value.
-    std::string gainStr = "";
-    gainStr.resize(16);
-    gainStr = std::to_string(gain);
-    ImGui::InputText("gain", gainStr.data(), 15, ImGuiInputTextFlags_CharsDecimal);
-    // TODO detect change, modifFlag.
-    try
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputDouble("gain", &gainInput, 0.0, 0.0, "%.15f");
+    if (ImGui::IsItemActive() == false)
     {
-        gain = std::stod(gainStr);
+        if (gain != gainInput)
+        {
+            modifFlag = true;
+        }
+        gain = gainInput;
     }
-    catch (const std::exception&)
-    {
-        //
-    }
+    ImGui::Checkbox("changed", &modifFlag);
 }
 
 void GainNode::SaveProperties(pugi::xml_node& xmlNode)
