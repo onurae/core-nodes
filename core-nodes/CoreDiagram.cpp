@@ -338,6 +338,7 @@ void CoreDiagram::MouseLeftButtonSingleClick()
             SortNodeOrder();
         }
         state = State::Draging; // SetState:Draging
+        distFromClickToCenter = (mousePos - rectCanvas.GetTL() - scroll) / scale - iNode->GetRectNode().GetCenter();
     }
     else if (state == State::HoveringInput)
     {
@@ -390,14 +391,11 @@ void CoreDiagram::MouseLeftButtonDrag()
     {
         if (iNode->GetFlagSet().HasFlag(NodeFlag::Selected) == false) // If draging node is an unselected node, drag only that node.
         {
-            iNode->Translate(io.MouseDelta / scale, false);
+            DragNodeSingle();
         }
         else // If draging node is selected, drag all selected nodes.
         {
-            for (const auto& node : coreNodeVec)
-            {
-                node->Translate(io.MouseDelta / scale, true);
-            }
+            DragNodeMulti();
         }
         if (io.MouseDelta.x != 0.0f || io.MouseDelta.y != 0.0f)
         {
@@ -782,12 +780,11 @@ void CoreDiagram::UpdateCanvasScrollZoom()
         }
         ImVec2 focus = (mousePos - scroll - position) / scale;
         auto zoom = static_cast<int>(io.MouseWheel);
-        float biasScale = 0.10f;
         if (zoom < 0)
         {
             while (zoom < 0)
             {
-                scale = ImMax(scaleMin, scale - biasScale);
+                scale = ImMax(scaleMin, scale - deltaScale);
                 zoom += 1;
             }
         }
@@ -795,7 +792,7 @@ void CoreDiagram::UpdateCanvasScrollZoom()
         {
             while (zoom > 0)
             {
-                scale = ImMin(scaleMax, scale + biasScale);
+                scale = ImMin(scaleMax, scale + deltaScale);
                 zoom -= 1;
             }
         }
@@ -828,6 +825,92 @@ void CoreDiagram::UpdateCanvasGrid(ImDrawList* drawList) const
         drawList->AddLine(ImVec2(0.0f, y) + position, ImVec2(size.x, y) + position, color, 0.1f);
         y += grid;
         markY -= 1;
+    }
+}
+
+void CoreDiagram::FitToWindow()
+{
+    if (coreNodeVec.empty() == true)
+    {
+        return;
+    }
+
+    // Rectangle of all nodes.
+    ImVec2 min = coreNodeVec.at(0)->GetRectNode().GetTL();
+    ImVec2 max = coreNodeVec.at(0)->GetRectNode().GetBR();
+    for (const auto& element : coreNodeVec)
+    {
+        if (auto xTL = element->GetRectNode().GetTL().x; min.x > xTL) { min.x = xTL; }
+        if (auto yTL = element->GetRectNode().GetTL().y; min.y > yTL) { min.y = yTL; }
+        if (auto xBR = element->GetRectNode().GetBR().x; max.x < xBR) { max.x = xBR; }
+        if (auto yBR = element->GetRectNode().GetBR().y; max.y < yBR) { max.y = yBR; }
+    }
+    auto rectNodes = ImRect(min, max);
+
+    // Scaling to fit.
+    auto rX = rectCanvas.GetWidth() / rectNodes.GetWidth();
+    auto rY = rectCanvas.GetHeight() / rectNodes.GetHeight();
+    auto r = rY < rX ? rY : rX;
+    scale = r * 0.80f; // Canvas is 1.25x of the rectNodes.
+    scale = std::floor(scale  / deltaScale) * deltaScale;
+    if (scale >= scaleMax)
+    {
+        scale = scaleMax;
+    }
+    if (scale <= scaleMin)
+    {
+        scale = scaleMin;
+        Notifier::Add(Notif(Notif::Type::WARNING, "Zoom out limit!",
+            "There might be nodes outside of the visible canvas, check visible node number.", 5));
+    }
+
+    scroll -= rectNodes.GetCenter() * scale + scroll;
+    scroll = scroll + ImVec2(rectCanvas.GetWidth(), rectCanvas.GetHeight()) * 0.5f;
+}
+
+void CoreDiagram::DragNodeSingle()
+{
+    // Only allow dragging node inside of the canvas.
+    const ImGuiIO& io = ImGui::GetIO();
+    if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == false)
+    {
+        iNode->Translate(io.MouseDelta / scale, false);
+    }
+    else if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == true)
+    {
+        iNode->Translate((mousePos - rectCanvas.GetTL() - scroll) / scale - clickPosAtTheEdge, false);
+        draggingOutOfCanvas = false;
+    }
+    else
+    {
+        draggingOutOfCanvas = true;
+        clickPosAtTheEdge = iNode->GetRectNode().GetCenter() + distFromClickToCenter;
+    }
+}
+
+void CoreDiagram::DragNodeMulti()
+{
+    // Only allow dragging node inside of the canvas.
+    const ImGuiIO& io = ImGui::GetIO();
+    if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == false)
+    {
+        for (const auto& node : coreNodeVec)
+        {
+            node->Translate(io.MouseDelta / scale, true);
+        }
+    }
+    else if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == true)
+    {
+        for (const auto& node : coreNodeVec)
+        {
+            node->Translate((mousePos - rectCanvas.GetTL() - scroll) / scale - clickPosAtTheEdge, true);
+        }
+        draggingOutOfCanvas = false;
+    }
+    else
+    {
+        draggingOutOfCanvas = true;
+        clickPosAtTheEdge = iNode->GetRectNode().GetCenter() + distFromClickToCenter;
     }
 }
 
@@ -1144,45 +1227,6 @@ void CoreDiagram::PopupMenu()
         ImGui::EndPopup();
     }
     ImGui::PopStyleVar();
-}
-
-void CoreDiagram::FitToWindow()
-{
-    if (coreNodeVec.empty() == true)
-    {
-        return;
-    }
-
-    // Rectangle of all nodes.
-    ImVec2 min = coreNodeVec.at(0)->GetRectNode().GetTL();
-    ImVec2 max = coreNodeVec.at(0)->GetRectNode().GetBR();
-    for (const auto& element : coreNodeVec)
-    {
-        if (auto xTL = element->GetRectNode().GetTL().x; min.x > xTL) { min.x = xTL; }
-        if (auto yTL = element->GetRectNode().GetTL().y; min.y > yTL) { min.y = yTL; }
-        if (auto xBR = element->GetRectNode().GetBR().x; max.x < xBR) { max.x = xBR; }
-        if (auto yBR = element->GetRectNode().GetBR().y; max.y < yBR) { max.y = yBR; }
-    }
-    auto rectNodes = ImRect(min, max);
-
-    // Scaling to fit.
-    auto rX = rectCanvas.GetWidth() / rectNodes.GetWidth();
-    auto rY = rectCanvas.GetHeight() / rectNodes.GetHeight();
-    auto r = rY < rX ? rY : rX;
-    scale = r * 0.80f; // Canvas is 1.25x of the rectNodes.
-    scale = std::floor(scale * 10.0f) * 0.1f;
-    if (scale >= scaleMax)
-    {
-        scale = scaleMax;
-    }
-    if (scale <= scaleMin)
-    {
-        scale = scaleMin;
-        Notifier::Add(Notif(Notif::Type::WARNING, "No more zoom out!", "There might be nodes outside of the visible canvas!", 5));
-    }
-
-    scroll -= rectNodes.GetCenter() * scale + scroll;
-    scroll = scroll + ImVec2(rectCanvas.GetWidth(), rectCanvas.GetHeight()) * 0.5f;
 }
 
 void CoreDiagram::EraseLink(const CoreNodeInput* input)

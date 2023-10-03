@@ -50,8 +50,17 @@ private:
     // Update canvas
     ImRect rectCanvas;
     void UpdateCanvasRect();
+    const float deltaScale = 0.05f;
     void UpdateCanvasScrollZoom();
     void UpdateCanvasGrid(ImDrawList* drawList) const;
+    void FitToWindow();
+
+    // Dragging on canvas.
+    bool draggingOutOfCanvas = false;
+    ImVec2 distFromClickToCenter;
+    ImVec2 clickPosAtTheEdge;
+    void DragNodeSingle();
+    void DragNodeMulti();
     
     // Actions
     void Actions();
@@ -83,7 +92,6 @@ private:
     bool ConnectionRules([[maybe_unused]] const CoreNode* inputNode, const CoreNode* outputNode, const CoreNodeInput* input, const CoreNodeOutput* output) const;
     void SortNodeOrder();
     void PopupMenu();
-    void FitToWindow();
 
     // Network
     enum class LinkType;
