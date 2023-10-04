@@ -24,6 +24,7 @@ void CoreDiagram::Update()
     UpdateCanvasGrid(ImGui::GetWindowDrawList());
     UpdateNodeFlags(); // Sets hovNode.
     Actions();
+    NodeModifFlag();
     DrawCanvasElements();
     PopupMenu();
 }
@@ -315,6 +316,7 @@ void CoreDiagram::MouseLeftButtonSingleClick()
         {
             highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
             highlightedNode = nullptr;
+            modifFlag = true;
         }
     }
     else if (state == State::HoveringNode)
@@ -1121,6 +1123,18 @@ void CoreDiagram::UpdateOutputFlags(CoreNode* node)
     }
 }
 
+void CoreDiagram::NodeModifFlag()
+{
+    for (const auto& element : coreNodeVec)
+    {
+        if (element->GetModifFlag() == true)
+        {
+            modifFlag = true;
+            element->ResetModifFlag();
+        }
+    }
+}
+
 void CoreDiagram::HighlightNode()
 {
     if (highlightedNode != nullptr) // Unset highlighted node.
@@ -1128,6 +1142,10 @@ void CoreDiagram::HighlightNode()
         highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
     }
     iNode->GetFlagSet().SetFlag(NodeFlag::Highlighted);
+    if (iNode != highlightedNode)
+    {
+        modifFlag = true;
+    }
     highlightedNode = iNode; // Set highlighted node.
     if (coreNodeVec.back() != iNode)
     {

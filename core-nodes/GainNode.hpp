@@ -25,10 +25,7 @@ public:
     void LoadProperties(pugi::xml_node& xmlNode) override;
 private:
     double gain = 1.0;
-
-    // TODO carry these to CoreNode?
-    double gainInput = 1.0;
-    bool modifFlag = false;
+    double iGain = gain;
 };
 
 #endif /* GAINNODE_HPP */

@@ -68,6 +68,7 @@ protected:
     void BuildGeometry();
     virtual void SaveProperties(pugi::xml_node& xmlNode) = 0;
     virtual void LoadProperties(pugi::xml_node& xmlNode) = 0;
+    bool modifFlag = false;
 
 public:
     CoreNode() = default;
@@ -75,6 +76,8 @@ public:
     virtual ~CoreNode() = default;
     void Save(pugi::xml_node& xmlNode);
     void Load(const pugi::xml_node& xmlNode);
+    bool GetModifFlag() const { return modifFlag; }
+    void ResetModifFlag() { modifFlag = false; }
 
     std::string GetName() const { return name; }
     NodeType GetType() const { return type; };
