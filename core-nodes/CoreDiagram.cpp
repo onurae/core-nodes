@@ -111,7 +111,7 @@ void CoreDiagram::DrawProperties()
 {
     if (highlightedNode != nullptr)
     {
-        highlightedNode->DrawProperties();
+        highlightedNode->DrawProperties(coreNodeVec);
     }
     for (const auto& element : coreNodeVec)
     {

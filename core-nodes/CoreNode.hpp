@@ -61,6 +61,7 @@ private:
     float inputsHeight = 0.0f;
     float outputsWidth = 0.0f;
     float outputsHeight = 0.0f;
+    std::string nameEdited;
 
 protected:
     void AddInput(CoreNodeInput& input);
@@ -69,6 +70,10 @@ protected:
     virtual void SaveProperties(pugi::xml_node& xmlNode) = 0;
     virtual void LoadProperties(pugi::xml_node& xmlNode) = 0;
     bool modifFlag = false;
+
+    static bool IsNameUnique(std::string_view str, const std::vector<CoreNode*>& coreNodeVec);
+    void EditName(const std::vector<CoreNode*>& coreNodeVec);
+    bool editingName = false;
 
 public:
     CoreNode() = default;
@@ -81,7 +86,6 @@ public:
 
     std::string GetName() const { return name; }
     std::string GetLibName() const { return libName; }
-    void SetName(const std::string& str) { name = str; }
     NodeType GetType() const { return type; };
     FlagSet& GetFlagSet() { return flagSet; }
     const FlagSet& GetFlagSet() const { return flagSet; }
@@ -99,7 +103,7 @@ public:
     bool IsPortInverted() const { return portInverted; }
 
     virtual void Build() = 0;
-    virtual void DrawProperties() = 0;
+    virtual void DrawProperties(const std::vector<CoreNode*>& coreNodeVec) = 0;
 };
 
 class NodeParamDouble
@@ -107,18 +111,18 @@ class NodeParamDouble
 private:
     std::string name;
     bool edit = false;
-    double value;
+    double data;
 
 public:
-    explicit NodeParamDouble(const std::string& name, double v) : name(name), value(v) {}
+    explicit NodeParamDouble(const std::string& name, double v) : name(name), data(v) {}
     virtual ~NodeParamDouble() = default;
-    double Get() const { return value; }
-    void Set(double v) { value = v; }
+    double Get() const { return data; }
+    void Set(double v) { data = v; }
     void Draw(bool& modifFlag, double step = 0.0, double stepFast = 0.0)
     {
         ImGui::SetNextItemWidth(140);
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, edit ? ImVec4(0.48f, 0.48f, 0.48f, 1.0f) : ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
-        if (ImGui::InputDouble(name.c_str(), &value, step, stepFast, "%.15g", ImGuiInputTextFlags_EnterReturnsTrue))
+        ImGui::PushStyleColor(ImGuiCol_Text, edit ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
+        if (ImGui::InputDouble(name.c_str(), &data, step, stepFast, "%.15g", ImGuiInputTextFlags_EnterReturnsTrue))
         {
             edit = false;
             modifFlag = true;

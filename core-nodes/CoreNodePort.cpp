@@ -304,7 +304,7 @@ void CoreNodeOutput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) cons
     ImGui::Text(name.c_str());
 
     // Show type.
-    if (flagSet.Equal(PortFlag::Draging) && linkNum == 0)
+    if (flagSet.Equal(PortFlag::Draging))
     {
         std::string typeName = portTypeNames.at(static_cast<int>(dataType));
         ImVec2 typeNameSize = ImGui::CalcTextSize(typeName.c_str());
@@ -340,7 +340,7 @@ void CoreNodeOutput::Draw(ImDrawList* drawList, ImVec2 offset, float scale) cons
 
     float distTri = radius1 * 1.6f;
     float triLength = radius1;
-    if (flagSet.Equal(PortFlag::Draging) && type == PortType::Out && linkNum == 0)
+    if (flagSet.Equal(PortFlag::Draging) && type == PortType::Out)
     {
         if (inverted == false)
         {

@@ -16,14 +16,15 @@ void GainNode::Build()
     BuildGeometry();
 }
 
-void GainNode::DrawProperties()
+void GainNode::DrawProperties(const std::vector<CoreNode*>& coreNodeVec)
 {
-    ImGui::Text(GetName().c_str());
+    ImGui::Text(GetLibName().c_str());
     ImGui::Separator();
     ImGui::Text("Outputs input times parameter.");
     ImGui::NewLine();
     ImGui::Text("Parameters");
     ImGui::Separator();
+    EditName(coreNodeVec);
     gain.Draw(modifFlag);
 }
 

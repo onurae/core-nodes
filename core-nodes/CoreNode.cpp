@@ -25,12 +25,9 @@ void CoreNode::AddOutput(CoreNodeOutput& output)
     outputVec.push_back(output);
 }
 
-CoreNode::CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode) : name(name), libName(libName), type(type), colorNode(colorNode)
+CoreNode::CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode) : name(name), libName(libName), type(type), colorNode(colorNode), nameEdited(name)
 {
     flagSet.SetFlag(NodeFlag::Default);
-    rectName.Min = ImVec2(0.0f, 0.0f);
-    rectName.Max = ImGui::CalcTextSize(name.c_str());
-    titleHeight = kTitleHeight * rectName.GetHeight();
 
     colorHead.Value.x = colorNode.Value.x * 0.5f;
     colorHead.Value.y = colorNode.Value.y * 0.5f;
@@ -110,8 +107,45 @@ void CoreNode::Load(const pugi::xml_node& xmlNode)
     inputsHeight = LoadFloat(xmlNode, "inputsHeight");
     outputsWidth = LoadFloat(xmlNode, "outputsWidth");
     outputsHeight = LoadFloat(xmlNode, "outputsHeight");
+    nameEdited = name;
 
     LoadProperties(xmlNode.child("properties"));
+}
+
+bool CoreNode::IsNameUnique(std::string_view str, const std::vector<CoreNode*>& coreNodeVec)
+{
+    for (auto n : coreNodeVec)
+    {
+        if (n->GetName() == str)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void CoreNode::EditName(const std::vector<CoreNode*>& coreNodeVec)
+{
+    ImGui::SetNextItemWidth(140);
+    ImGui::PushStyleColor(ImGuiCol_Text, editingName ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
+    if (ImGui::InputText("name", &nameEdited, ImGuiInputTextFlags_EnterReturnsTrue)) // ImGuiInputTextFlags_CharsNoBlank
+    {
+        if (IsNameUnique(nameEdited, coreNodeVec) == true)
+        {
+            name = nameEdited;
+            auto loc = rectNode.Min;
+            BuildGeometry();
+            Translate(loc);
+            modifFlag = true;
+        }
+        else if (nameEdited != name)
+        {
+            Notifier::Add(Notif(Notif::Type::ERROR, "The name \"" + nameEdited + "\"" + " already exists!", "Enter a unique name.", 5.0f));
+            nameEdited = name;
+        }
+    }
+    editingName = ImGui::IsItemActive() ? true : false;
+    ImGui::PopStyleColor(1);
 }
 
 void CoreNode::Translate(ImVec2 delta, bool selectedOnly)
@@ -161,6 +195,10 @@ void CoreNode::InvertPort()
 
 void CoreNode::BuildGeometry()
 {
+    rectName.Min = ImVec2(0.0f, 0.0f);
+    rectName.Max = ImGui::CalcTextSize(name.c_str());
+    titleHeight = kTitleHeight * rectName.GetHeight();
+
     bodyHeight = ImMax(inputsHeight, outputsHeight) + kVerticalTop * rectName.GetHeight() + kVerticalBottom * rectName.GetHeight();
     rectNode.Min = ImVec2(0.0f, 0.0f);
     rectNode.Max.x = ImMax(inputsWidth + outputsWidth + kHorizontal * rectName.GetHeight(), rectName.GetWidth() + kHorizontal * rectName.GetHeight());

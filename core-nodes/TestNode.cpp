@@ -21,18 +21,15 @@ void TestNode::Build()
     BuildGeometry();
 }
 
-void TestNode::DrawProperties()
+void TestNode::DrawProperties(const std::vector<CoreNode*>& coreNodeVec)
 {
     ImGui::Text(GetLibName().c_str());
-    if (std::string titleStr; ImGui::InputText("std::string", &titleStr, ImGuiInputTextFlags_EnterReturnsTrue))
-    {
-        SetName(titleStr);
-    }
     ImGui::Separator();
     ImGui::Text("This is a test module explanation.");
     ImGui::NewLine();
     ImGui::Text("Parameters");
     ImGui::Separator();
+    EditName(coreNodeVec);
     parameter1.Draw(modifFlag);
     parameter2.Draw(modifFlag);
 }

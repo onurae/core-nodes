@@ -19,7 +19,7 @@ public:
     ~GainNode() override = default;
 
     void Build() override;
-    void DrawProperties() override;
+    void DrawProperties(const std::vector<CoreNode*>& coreNodeVec) override;
 
     void SaveProperties(pugi::xml_node& xmlNode) override;
     void LoadProperties(pugi::xml_node& xmlNode) override;

@@ -9,7 +9,7 @@
 
 #include "CoreLibrary.hpp"
 
-CoreNode* CoreLibrary::GetNode(const std::string& libName, const std::string& uniqueName)
+CoreNode* CoreLibrary::GetNode(std::string_view libName, const std::string& uniqueName)
 {
     if (libName == "Gain")
     {

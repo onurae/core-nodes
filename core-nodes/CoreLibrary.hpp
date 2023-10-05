@@ -29,7 +29,7 @@ private:
 public:
     CoreLibrary() = default;
     virtual ~CoreLibrary() = default;
-    CoreNode* GetNode(const std::string & libName, const std::string & uniqueName);
+    CoreNode* GetNode(std::string_view libName, const std::string & uniqueName);
 
     void Draw();
     bool IsLeafClicked() const { return leafClicked; }
