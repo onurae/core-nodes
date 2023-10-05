@@ -23,44 +23,30 @@ void TestNode::Build()
 
 void TestNode::DrawProperties()
 {
-    ImGui::Text("Library Name: Test");
-    ImGui::Text(GetName().c_str());
+    ImGui::Text(GetLibName().c_str());
+    if (std::string titleStr; ImGui::InputText("std::string", &titleStr, ImGuiInputTextFlags_EnterReturnsTrue))
+    {
+        SetName(titleStr);
+    }
     ImGui::Separator();
     ImGui::Text("This is a test module explanation.");
     ImGui::NewLine();
     ImGui::Text("Parameters");
     ImGui::Separator();
-    // TODO size of input text and gain value.
-    std::string parameter1Str = "";
-    std::string parameter2Str = "";
-    parameter1Str.resize(16);
-    parameter1Str = std::to_string(parameter1);
-    parameter2Str.resize(16);
-    parameter2Str = std::to_string(parameter2);
-    ImGui::InputText("parameter1", parameter1Str.data(), 15, ImGuiInputTextFlags_CharsDecimal);
-    ImGui::InputText("parameter2", parameter2Str.data(), 15, ImGuiInputTextFlags_CharsDecimal);
-    // TODO detect change, modifFlag.
-    try
-    {
-        parameter1 = std::stod(parameter1Str);
-        parameter2 = std::stod(parameter2Str);
-    }
-    catch (const std::exception&)
-    {
-        //
-    }
+    parameter1.Draw(modifFlag);
+    parameter2.Draw(modifFlag);
 }
 
 void TestNode::SaveProperties(pugi::xml_node& xmlNode)
 {
-    SaveDouble(xmlNode, "parameter1", parameter1);
-    SaveDouble(xmlNode, "parameter2", parameter2);
+    SaveDouble(xmlNode, "parameter1", parameter1.Get());
+    SaveDouble(xmlNode, "parameter2", parameter2.Get());
 }
 
 void TestNode::LoadProperties(pugi::xml_node& xmlNode)
 {
-    parameter1 = LoadDouble(xmlNode, "parameter1");
-    parameter2 = LoadDouble(xmlNode, "parameter2");
+    parameter1.Set(LoadDouble(xmlNode, "parameter1"));
+    parameter2.Set(LoadDouble(xmlNode, "parameter2"));
 }
 
 

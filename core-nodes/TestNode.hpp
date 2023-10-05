@@ -24,8 +24,8 @@ public:
     void SaveProperties(pugi::xml_node& xmlNode) override;
     void LoadProperties(pugi::xml_node& xmlNode) override;
 private:
-    double parameter1 = 1.0;
-    double parameter2 = 1.0;
+    NodeParamDouble parameter1{ "parameter1", 1.234 };
+    NodeParamDouble parameter2{ "parameter2", 1.234 };
 };
 
 #endif /* TESTNODE_HPP */

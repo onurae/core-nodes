@@ -8,7 +8,6 @@
 ******************************************************************************************/
 
 #include "GainNode.hpp"
-#include <iostream>
 
 void GainNode::Build()
 {
@@ -25,24 +24,15 @@ void GainNode::DrawProperties()
     ImGui::NewLine();
     ImGui::Text("Parameters");
     ImGui::Separator();
-    ImGui::SetNextItemWidth(100);
-    ImGui::InputDouble("gain", &iGain, 0.0, 0.0, "%.15g");
-    if (ImGui::IsItemActive() == false && gain != iGain)
-    {
-        modifFlag = true;
-        gain = iGain;
-    }
+    gain.Draw(modifFlag);
 }
 
 void GainNode::SaveProperties(pugi::xml_node& xmlNode)
 {
-    SaveDouble(xmlNode, "gain", gain);
+    SaveDouble(xmlNode, "gain", gain.Get());
 }
 
 void GainNode::LoadProperties(pugi::xml_node& xmlNode)
 {
-    gain = LoadDouble(xmlNode, "gain");
-    iGain = gain;
+    gain.Set(LoadDouble(xmlNode, "gain"));
 }
-
-

@@ -24,8 +24,7 @@ public:
     void SaveProperties(pugi::xml_node& xmlNode) override;
     void LoadProperties(pugi::xml_node& xmlNode) override;
 private:
-    double gain = 1.0;
-    double iGain = gain;
+    NodeParamDouble gain{"gain", 1.0};
 };
 
 #endif /* GAINNODE_HPP */

@@ -32,7 +32,6 @@ class CoreDiagram
 private:
     bool mNodeDrag = false; // For node drag modification.
     bool modifFlag = false; // Modification flag.
-    void NodeModifFlag();   // Check all nodes for modification.
 
     CoreLibrary coreLib;
     State state = State::Default;

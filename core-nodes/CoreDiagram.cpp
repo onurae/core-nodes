@@ -24,7 +24,6 @@ void CoreDiagram::Update()
     UpdateCanvasGrid(ImGui::GetWindowDrawList());
     UpdateNodeFlags(); // Sets hovNode.
     Actions();
-    NodeModifFlag();
     DrawCanvasElements();
     PopupMenu();
 }
@@ -113,6 +112,14 @@ void CoreDiagram::DrawProperties()
     if (highlightedNode != nullptr)
     {
         highlightedNode->DrawProperties();
+    }
+    for (const auto& element : coreNodeVec)
+    {
+        if (element->GetModifFlag() == true)
+        {
+            modifFlag = true;
+            element->ResetModifFlag();
+        }
     }
 }
 
@@ -1119,18 +1126,6 @@ void CoreDiagram::UpdateOutputFlags(CoreNode* node)
             {
                 output.GetFlagSet().SetFlag(PortFlag::Hovered);
             }
-        }
-    }
-}
-
-void CoreDiagram::NodeModifFlag()
-{
-    for (const auto& element : coreNodeVec)
-    {
-        if (element->GetModifFlag() == true)
-        {
-            modifFlag = true;
-            element->ResetModifFlag();
         }
     }
 }

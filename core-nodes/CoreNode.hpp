@@ -80,6 +80,8 @@ public:
     void ResetModifFlag() { modifFlag = false; }
 
     std::string GetName() const { return name; }
+    std::string GetLibName() const { return libName; }
+    void SetName(const std::string& str) { name = str; }
     NodeType GetType() const { return type; };
     FlagSet& GetFlagSet() { return flagSet; }
     const FlagSet& GetFlagSet() const { return flagSet; }
@@ -98,6 +100,32 @@ public:
 
     virtual void Build() = 0;
     virtual void DrawProperties() = 0;
+};
+
+class NodeParamDouble
+{
+private:
+    std::string name;
+    bool edit = false;
+    double value;
+
+public:
+    explicit NodeParamDouble(const std::string& name, double v) : name(name), value(v) {}
+    virtual ~NodeParamDouble() = default;
+    double Get() const { return value; }
+    void Set(double v) { value = v; }
+    void Draw(bool& modifFlag, double step = 0.0, double stepFast = 0.0)
+    {
+        ImGui::SetNextItemWidth(140);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, edit ? ImVec4(0.48f, 0.48f, 0.48f, 1.0f) : ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
+        if (ImGui::InputDouble(name.c_str(), &value, step, stepFast, "%.15g", ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            edit = false;
+            modifFlag = true;
+        }
+        edit = ImGui::IsItemActive() ? true : false;
+        ImGui::PopStyleColor(1);
+    }
 };
 
 #endif /* CORENODE_HPP */

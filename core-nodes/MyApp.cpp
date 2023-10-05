@@ -327,6 +327,11 @@ void MyApp::LoadFromFile()
 
 void MyApp::UndoRedoSave()
 {
+    if (ImGui::IsAnyItemActive() == true)
+    {
+        return;
+    }
+
     // If project modified, add doc. TODO: other modifications
     if (coreDiagram->GetModifFlag() == true)
     {
