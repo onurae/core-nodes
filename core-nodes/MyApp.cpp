@@ -88,7 +88,7 @@ void MyApp::Dockspace()
     coreDiagram->DrawLibrary();
     ImGui::End();
 
-    ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_None);
+    ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     coreDiagram->Update();
     ImGui::End();
 
