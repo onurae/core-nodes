@@ -35,7 +35,7 @@ private:
     void Menu();
     void MenuFile();
     void MenuView();
-    void MenuAbout();
+    void MenuHelp();
 
     FileDialog fileDialog;
     bool fileDialogOpen = false;
@@ -46,7 +46,7 @@ private:
     void NewProject();
     void OpenProject();
     bool openSaveModal = false;
-    bool stateSaveModal = true; // true: from new, false: from open.
+    int stateSaveModal = 0; // 1: from new, 2: from open, 3: from exit.
     void DrawSaveModal();
     pugi::xml_document CreateDoc() const;
     void SaveProject(bool saveAs = false);
@@ -60,4 +60,7 @@ private:
     const int maxSavedDoc{ 20 };
     void UndoRedoSave();
     void ResetDocDeque();
+
+    bool openAbout = false;
+    void DrawAbout();
 };
