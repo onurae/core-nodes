@@ -43,6 +43,7 @@ private:
     ImVec2 scroll;
     ImVec2 mousePos;
     std::vector<CoreNode*> coreNodeVec;
+    std::vector<CoreNode*> exeOrder; // Execution order.
     CoreNode* highlightedNode = nullptr;
     void HighlightNode();
     std::string CreateUniqueName(const std::string& libName) const;
@@ -183,6 +184,7 @@ public:
     bool GetModifFlag() const { return modifFlag; }
     void ResetModifFlag() { modifFlag = false; }
     void DrawLibrary() { coreLib.Draw(); }
+    void DrawExplorer();
     void DrawProperties();
 };
 

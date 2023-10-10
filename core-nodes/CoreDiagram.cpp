@@ -34,6 +34,11 @@ void CoreDiagram::Save(pugi::xml_node& xmlNode) const
     SaveFloat(node, "scale", scale);
     SaveImVec2(node, "scroll", scroll);
     highlightedNode != nullptr ? SaveString(node, "hNode", highlightedNode->GetName()) : SaveString(node, "hNode", "");
+    auto exeList = node.append_child("exeList");
+    for (const auto& element : exeOrder)
+    {
+        exeList.append_child("node").append_attribute("name") = element->GetName().c_str();
+    }
     auto nodeList = node.append_child("nodeList");
     for (const auto& element : coreNodeVec)
     {
@@ -105,6 +110,38 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
             link.inputPort->SetTargetNodeOutput(link.outputPort);
         }
     }
+    for (const auto& element : node.child("exeList").children("node"))
+    {
+        for (const auto nodeElement : coreNodeVec)
+        {
+            if (nodeElement->GetName() == element.attribute("name").as_string())
+            {
+                exeOrder.push_back(nodeElement);
+            }
+        }
+    }
+}
+
+void CoreDiagram::DrawExplorer()
+{
+    ImGui::Text("Node Execution Order");
+    ImGui::Separator();
+    for (int i = 0; i < exeOrder.size(); i++)
+    {
+        auto item = exeOrder.at(i);
+        ImGui::Selectable(item->GetName().c_str());
+        if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+        {
+            int iNext = i + (ImGui::GetMouseDragDelta(0).y < 0.0f ? -1 : 1);
+            if (iNext >= 0 && iNext < exeOrder.size())
+            {
+                exeOrder.at(i) = exeOrder.at(iNext);
+                exeOrder.at(iNext) = item;
+                ImGui::ResetMouseDragDelta();
+                modifFlag = true;
+            }
+        }
+    }
 }
 
 void CoreDiagram::DrawProperties()
@@ -160,6 +197,10 @@ void CoreDiagram::Actions()
     {
         KeyboardPressDelete();
         return;
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_Space))
+    {
+        FitToWindow();
     }
 }
 
@@ -475,6 +516,7 @@ void CoreDiagram::MouseLeftButtonRelease()
                 newNode->Translate(pos - newNode->GetRectNode().GetCenter());
                 newNode->GetFlagSet().SetFlag(NodeFlag::Visible | NodeFlag::Hovered | NodeFlag::Highlighted);
                 coreNodeVec.push_back(newNode);
+                exeOrder.push_back(newNode);
                 if (highlightedNode != nullptr)
                 {
                     highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
@@ -629,6 +671,8 @@ void CoreDiagram::KeyboardPressDelete()
     // Delete selected nodes
     for (const auto& node : selectedNodes)
     {
+        auto it = std::find(exeOrder.begin(), exeOrder.end(), node);
+        exeOrder.erase(it);
         delete node;
     }
     coreNodeVec = unselectedNodes;
@@ -778,11 +822,6 @@ void CoreDiagram::UpdateCanvasScrollZoom()
     bool dragCond = state == State::DragingInput || state == State::DragingOutput;
     if (state != State::None && (ImGui::IsMouseDown(0) == false || dragCond) && rectCanvas.Contains(mousePos))
     {
-        if (ImGui::IsKeyPressed(ImGuiKey_Space))
-        {
-            scroll = {};
-            scale = 1.0f;
-        }
         if (ImGui::IsMouseDragging(1))
         {
             scroll += io.MouseDelta;
@@ -839,7 +878,7 @@ void CoreDiagram::UpdateCanvasGrid(ImDrawList* drawList) const
 
 void CoreDiagram::FitToWindow()
 {
-    if (coreNodeVec.empty() == true)
+    if (coreNodeVec.empty() == true || rectCanvas.Contains(mousePos) == false)
     {
         return;
     }

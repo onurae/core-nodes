@@ -70,6 +70,7 @@ void MyApp::Dockspace()
         ImGui::DockBuilderDockWindow("Library", dock_id_left_top);
         ImGui::DockBuilderDockWindow("Diagram", dock_main_id);
         ImGui::DockBuilderDockWindow("Properties", dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("Explorer", dock_id_left_bottom);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 
@@ -86,6 +87,10 @@ void MyApp::Dockspace()
 
     ImGui::Begin("Library", nullptr, ImGuiWindowFlags_None);
     coreDiagram->DrawLibrary();
+    ImGui::End();
+
+    ImGui::Begin("Explorer", nullptr, ImGuiWindowFlags_None);
+    coreDiagram->DrawExplorer();
     ImGui::End();
 
     ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);

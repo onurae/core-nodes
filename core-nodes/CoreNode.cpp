@@ -126,9 +126,12 @@ bool CoreNode::IsNameUnique(std::string_view str, const std::vector<CoreNode*>& 
 
 void CoreNode::EditName(const std::vector<CoreNode*>& coreNodeVec)
 {
-    ImGui::SetNextItemWidth(140);
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("name");
+    ImGui::SameLine(100.0f);
+    ImGui::SetNextItemWidth(140.0f);
     ImGui::PushStyleColor(ImGuiCol_Text, editingName ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
-    if (ImGui::InputText("name", &nameEdited, ImGuiInputTextFlags_EnterReturnsTrue)) // ImGuiInputTextFlags_CharsNoBlank
+    if (ImGui::InputText("##EditName", &nameEdited, ImGuiInputTextFlags_EnterReturnsTrue)) // ImGuiInputTextFlags_CharsNoBlank
     {
         if (IsNameUnique(nameEdited, coreNodeVec) == true)
         {
