@@ -33,6 +33,12 @@ void CoreDiagram::Save(pugi::xml_node& xmlNode) const
     auto node = xmlNode.append_child("diagram");
     SaveFloat(node, "scale", scale);
     SaveImVec2(node, "scroll", scroll);
+    highlightedNode != nullptr ? SaveString(node, "hNode", highlightedNode->GetName()) : SaveString(node, "hNode", "");
+    auto exeList = node.append_child("exeList");
+    for (const auto& element : exeOrder)
+    {
+        exeList.append_child("node").append_attribute("name") = element->GetName().c_str();
+    }
     auto nodeList = node.append_child("nodeList");
     for (const auto& element : coreNodeVec)
     {
@@ -62,8 +68,17 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
     outputFreeLink = ImVec2();
     for (const auto& element : node.child("nodeList").children("node"))
     {
-        coreNodeVec.emplace_back(new CoreNode());
+        // Add node without building.
+        coreNodeVec.push_back(coreLib.GetNode(LoadString(element, "libName"), LoadString(element, "name")));
         coreNodeVec.back()->Load(element);
+    }
+    auto hName = LoadString(node, "hNode");
+    for (const auto element : coreNodeVec)
+    {
+        if (element->GetName() == hName)
+        {
+            highlightedNode = element;
+        }
     }
     for (const auto& element : node.child("linkList").children("link"))
     {
@@ -93,6 +108,54 @@ void CoreDiagram::Load(const pugi::xml_node& xmlNode)
         {
             link.inputPort->SetTargetNode(link.outputNode);
             link.inputPort->SetTargetNodeOutput(link.outputPort);
+        }
+    }
+    for (const auto& element : node.child("exeList").children("node"))
+    {
+        for (const auto nodeElement : coreNodeVec)
+        {
+            if (nodeElement->GetName() == element.attribute("name").as_string())
+            {
+                exeOrder.push_back(nodeElement);
+            }
+        }
+    }
+}
+
+void CoreDiagram::DrawExplorer()
+{
+    ImGui::Text("Node Execution Order");
+    ImGui::Separator();
+    for (int i = 0; i < exeOrder.size(); i++)
+    {
+        auto item = exeOrder.at(i);
+        ImGui::Selectable(item->GetName().c_str());
+        if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+        {
+            int iNext = i + (ImGui::GetMouseDragDelta(0).y < 0.0f ? -1 : 1);
+            if (iNext >= 0 && iNext < exeOrder.size())
+            {
+                exeOrder.at(i) = exeOrder.at(iNext);
+                exeOrder.at(iNext) = item;
+                ImGui::ResetMouseDragDelta();
+                modifFlag = true;
+            }
+        }
+    }
+}
+
+void CoreDiagram::DrawProperties()
+{
+    if (highlightedNode != nullptr)
+    {
+        highlightedNode->DrawProperties(coreNodeVec);
+    }
+    for (const auto& element : coreNodeVec)
+    {
+        if (element->GetModifFlag() == true)
+        {
+            modifFlag = true;
+            element->ResetModifFlag();
         }
     }
 }
@@ -134,6 +197,10 @@ void CoreDiagram::Actions()
     {
         KeyboardPressDelete();
         return;
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_Space))
+    {
+        FitToWindow();
     }
 }
 
@@ -297,6 +364,7 @@ void CoreDiagram::MouseLeftButtonSingleClick()
         {
             highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
             highlightedNode = nullptr;
+            modifFlag = true;
         }
     }
     else if (state == State::HoveringNode)
@@ -320,6 +388,7 @@ void CoreDiagram::MouseLeftButtonSingleClick()
             SortNodeOrder();
         }
         state = State::Draging; // SetState:Draging
+        distFromClickToCenter = (mousePos - rectCanvas.GetTL() - scroll) / scale - iNode->GetRectNode().GetCenter();
     }
     else if (state == State::HoveringInput)
     {
@@ -372,14 +441,11 @@ void CoreDiagram::MouseLeftButtonDrag()
     {
         if (iNode->GetFlagSet().HasFlag(NodeFlag::Selected) == false) // If draging node is an unselected node, drag only that node.
         {
-            iNode->Translate(io.MouseDelta / scale, false);
+            DragNodeSingle();
         }
         else // If draging node is selected, drag all selected nodes.
         {
-            for (const auto& node : coreNodeVec)
-            {
-                node->Translate(io.MouseDelta / scale, true);
-            }
+            DragNodeMulti();
         }
         if (io.MouseDelta.x != 0.0f || io.MouseDelta.y != 0.0f)
         {
@@ -432,19 +498,38 @@ void CoreDiagram::MouseLeftButtonRelease()
 {
     if (state == State::None)
     {
-        if (coreNodeLib.IsLeafClicked() == true) // If a leaf clicked then released on the outside of canvas.
+        if (coreLib.IsLeafClicked() == true) // If a leaf clicked then released on the outside of canvas.
         {
-            coreNodeLib.SetLeafClickedFalse();
+            coreLib.SetLeafClickedFalse();
         }
     }
     else if (state == State::Default)
     {
-        if (coreNodeLib.IsLeafClicked() == true) // If a leaf clicked then released on the canvas, create the leaf.
+        if (coreLib.IsLeafClicked() == true) // If a leaf clicked then released on the canvas, create the leaf.
         {
-            ImVec2 pos = (mousePos - scroll - position) / scale;
-            coreNodeVec.push_back(CreateCoreNode(coreNodeLib.GetSelectedLeaf(), pos));
-            modifFlag = true;
-            coreNodeLib.SetLeafClickedFalse();
+            auto leafName = coreLib.GetSelectedLeaf();
+            auto newNode = coreLib.GetNode(leafName, CreateUniqueName(leafName));
+            if (newNode != nullptr)
+            {
+                newNode->Build();
+                ImVec2 pos = (mousePos - scroll - position) / scale;
+                newNode->Translate(pos - newNode->GetRectNode().GetCenter());
+                newNode->GetFlagSet().SetFlag(NodeFlag::Visible | NodeFlag::Hovered | NodeFlag::Highlighted);
+                coreNodeVec.push_back(newNode);
+                exeOrder.push_back(newNode);
+                if (highlightedNode != nullptr)
+                {
+                    highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
+                }
+                highlightedNode = newNode;
+                modifFlag = true;
+                coreLib.SetLeafClickedFalse();
+            }
+            else
+            {
+                Notifier::Add(Notif(Notif::Type::ERROR, "[" + leafName + "]" + " not found in the library!"));
+                coreLib.SetLeafClickedFalse();
+            }
         }
     }
     else if (state == State::Selecting)
@@ -586,6 +671,8 @@ void CoreDiagram::KeyboardPressDelete()
     // Delete selected nodes
     for (const auto& node : selectedNodes)
     {
+        auto it = std::find(exeOrder.begin(), exeOrder.end(), node);
+        exeOrder.erase(it);
         delete node;
     }
     coreNodeVec = unselectedNodes;
@@ -632,6 +719,8 @@ void CoreDiagram::PrintInfo()
     ImGui::Text("Position: %.2f, %.2f", position.x, position.y);
     ImGui::Text("Size: %.2f, %.2f", size.x, size.y);
     (state != State::None) ? ImGui::Text("Mouse: %.2f, %.2f", mousePos.x, mousePos.y) : ImGui::Text("Mouse: Outside of Canvas");
+    ImGui::Text("CanvasTL: %.2f, %.2f", rectCanvas.GetTL().x, rectCanvas.GetTL().y);
+    ImGui::Text("CanvasBR: %.2f, %.2f", rectCanvas.GetBR().x, rectCanvas.GetBR().y);
     ImGui::Text("Scroll: %.2f, %.2f", scroll.x, scroll.y);
     ImGui::Text("Scale: %.2f", scale);
 
@@ -707,6 +796,16 @@ void CoreDiagram::PrintInfo()
         }
     }
     ImGui::Text("Visible Links #: %d", numberOfVisibleLinks);
+
+    if (iNode != nullptr)
+    {
+        ImGui::NewLine();
+        ImGui::Text("[wrtOrigin]");
+        auto hTL = ImVec2(iNode->GetRectNode().GetTL() + scroll);
+        auto hBR = ImVec2(iNode->GetRectNode().GetBR() + scroll);
+        ImGui::Text("iNodeTL: %.2f, %.2f", hTL.x, hTL.y);
+        ImGui::Text("iNodeBR: %.2f, %.2f", hBR.x, hBR.y);
+    }
 }
 
 void CoreDiagram::UpdateCanvasRect()
@@ -723,23 +822,17 @@ void CoreDiagram::UpdateCanvasScrollZoom()
     bool dragCond = state == State::DragingInput || state == State::DragingOutput;
     if (state != State::None && (ImGui::IsMouseDown(0) == false || dragCond) && rectCanvas.Contains(mousePos))
     {
-        if (ImGui::IsKeyPressed(ImGuiKey_Space))
-        {
-            scroll = {};
-            scale = 1.0f;
-        }
         if (ImGui::IsMouseDragging(1))
         {
             scroll += io.MouseDelta;
         }
         ImVec2 focus = (mousePos - scroll - position) / scale;
         auto zoom = static_cast<int>(io.MouseWheel);
-        float biasScale = 0.10f;
         if (zoom < 0)
         {
             while (zoom < 0)
             {
-                scale = ImMax(0.3f, scale - biasScale);
+                scale = ImMax(scaleMin, scale - deltaScale);
                 zoom += 1;
             }
         }
@@ -747,7 +840,7 @@ void CoreDiagram::UpdateCanvasScrollZoom()
         {
             while (zoom > 0)
             {
-                scale = ImMin(2.0f, scale + biasScale);
+                scale = ImMin(scaleMax, scale + deltaScale);
                 zoom -= 1;
             }
         }
@@ -780,6 +873,92 @@ void CoreDiagram::UpdateCanvasGrid(ImDrawList* drawList) const
         drawList->AddLine(ImVec2(0.0f, y) + position, ImVec2(size.x, y) + position, color, 0.1f);
         y += grid;
         markY -= 1;
+    }
+}
+
+void CoreDiagram::FitToWindow()
+{
+    if (coreNodeVec.empty() == true || rectCanvas.Contains(mousePos) == false)
+    {
+        return;
+    }
+
+    // Rectangle of all nodes.
+    ImVec2 min = coreNodeVec.at(0)->GetRectNode().GetTL();
+    ImVec2 max = coreNodeVec.at(0)->GetRectNode().GetBR();
+    for (const auto& element : coreNodeVec)
+    {
+        if (auto xTL = element->GetRectNode().GetTL().x; min.x > xTL) { min.x = xTL; }
+        if (auto yTL = element->GetRectNode().GetTL().y; min.y > yTL) { min.y = yTL; }
+        if (auto xBR = element->GetRectNode().GetBR().x; max.x < xBR) { max.x = xBR; }
+        if (auto yBR = element->GetRectNode().GetBR().y; max.y < yBR) { max.y = yBR; }
+    }
+    auto rectNodes = ImRect(min, max);
+
+    // Scaling to fit.
+    auto rX = rectCanvas.GetWidth() / rectNodes.GetWidth();
+    auto rY = rectCanvas.GetHeight() / rectNodes.GetHeight();
+    auto r = rY < rX ? rY : rX;
+    scale = r * 0.80f; // Canvas is 1.25x of the rectNodes.
+    scale = std::floor(scale  / deltaScale) * deltaScale;
+    if (scale >= scaleMax)
+    {
+        scale = scaleMax;
+    }
+    if (scale <= scaleMin)
+    {
+        scale = scaleMin;
+        Notifier::Add(Notif(Notif::Type::WARNING, "Zoom out limit!",
+            "There might be nodes outside of the visible canvas, check visible node number.", 5));
+    }
+
+    scroll -= rectNodes.GetCenter() * scale + scroll;
+    scroll = scroll + ImVec2(rectCanvas.GetWidth(), rectCanvas.GetHeight()) * 0.5f;
+}
+
+void CoreDiagram::DragNodeSingle()
+{
+    // Only allow dragging node inside of the canvas.
+    const ImGuiIO& io = ImGui::GetIO();
+    if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == false)
+    {
+        iNode->Translate(io.MouseDelta / scale, false);
+    }
+    else if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == true)
+    {
+        iNode->Translate((mousePos - rectCanvas.GetTL() - scroll) / scale - clickPosAtTheEdge, false);
+        draggingOutOfCanvas = false;
+    }
+    else
+    {
+        draggingOutOfCanvas = true;
+        clickPosAtTheEdge = iNode->GetRectNode().GetCenter() + distFromClickToCenter;
+    }
+}
+
+void CoreDiagram::DragNodeMulti()
+{
+    // Only allow dragging node inside of the canvas.
+    const ImGuiIO& io = ImGui::GetIO();
+    if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == false)
+    {
+        for (const auto& node : coreNodeVec)
+        {
+            node->Translate(io.MouseDelta / scale, true);
+        }
+    }
+    else if (rectCanvas.Contains(mousePos) && draggingOutOfCanvas == true)
+    {
+        for (const auto& node : coreNodeVec)
+        {
+            node->Translate((mousePos - rectCanvas.GetTL() - scroll) / scale - clickPosAtTheEdge, true);
+        }
+        draggingOutOfCanvas = false;
+    }
+    else
+    {
+        draggingOutOfCanvas = true;
+        clickPosAtTheEdge = iNode->GetRectNode().GetCenter() + distFromClickToCenter;
     }
 }
 
@@ -997,6 +1176,10 @@ void CoreDiagram::HighlightNode()
         highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
     }
     iNode->GetFlagSet().SetFlag(NodeFlag::Highlighted);
+    if (iNode != highlightedNode)
+    {
+        modifFlag = true;
+    }
     highlightedNode = iNode; // Set highlighted node.
     if (coreNodeVec.back() != iNode)
     {
@@ -1031,43 +1214,6 @@ std::string CoreDiagram::CreateUniqueName(const std::string& libName) const
         }
     }
     return name;
-}
-
-CoreNode* CoreDiagram::CreateCoreNode(const CoreNodeLib::Node* node, ImVec2 pos)
-{
-    auto newNode = new CoreNode(node->id, CreateUniqueName(node->name), node->name, node->type, node->color);
-
-    float inputsWidth = 0.0f;
-    float inputsHeight = 0.0f;
-    float outputsWidth = 0.0f;
-    float outputsHeight = 0.0f;
-    int inOrder = 0;
-    for (const auto& in : node->inputs)
-    {
-        CoreNodeInput input(in.name, in.type, in.dataType, inOrder);
-        inputsWidth = ImMax(inputsWidth, input.GetRectPort().GetWidth());
-        inputsHeight += input.GetRectPort().GetHeight();
-        newNode->GetInputVec().push_back(input);
-        inOrder += 1;
-    }
-    int outOrder = 0;
-    for (const auto& out : node->outputs)
-    {
-        CoreNodeOutput output(out.name, out.type, out.dataType, outOrder);
-        outputsWidth = ImMax(outputsWidth, output.GetRectPort().GetWidth());
-        outputsHeight += output.GetRectPort().GetHeight();
-        newNode->GetOutputVec().push_back(output);
-        outOrder += 1;
-    }
-    newNode->BuildGeometry(inputsWidth, inputsHeight, outputsWidth, outputsHeight);
-    newNode->Translate(pos - newNode->GetRectNode().GetCenter());
-    newNode->GetFlagSet().SetFlag(NodeFlag::Visible | NodeFlag::Hovered | NodeFlag::Highlighted);
-    if (highlightedNode != nullptr)
-    {
-        highlightedNode->GetFlagSet().UnsetFlag(NodeFlag::Highlighted);
-    }
-    highlightedNode = newNode;
-    return highlightedNode;
 }
 
 bool CoreDiagram::ConnectionRules([[maybe_unused]] const CoreNode* inputNode, const CoreNode* outputNode, const CoreNodeInput* input, const CoreNodeOutput* output) const
@@ -1126,10 +1272,9 @@ void CoreDiagram::PopupMenu()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     if (ImGui::BeginPopup("DiagramPopupMenu"))
     {
-        if (ImGui::MenuItem("Home"))
+        if (ImGui::MenuItem("Fit to window"))
         {
-            scroll = {};
-            scale = 1.0f;
+            FitToWindow();
         }
         ImGui::EndPopup();
     }

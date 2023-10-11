@@ -19,6 +19,7 @@ void MyApp::Update()
     ImGui::PopFont();
     UndoRedoSave();
     DrawSaveModal();
+    DrawAbout();
 }
 
 void MyApp::SelectTab(const char* windowName) const
@@ -69,6 +70,7 @@ void MyApp::Dockspace()
         ImGui::DockBuilderDockWindow("Library", dock_id_left_top);
         ImGui::DockBuilderDockWindow("Diagram", dock_main_id);
         ImGui::DockBuilderDockWindow("Properties", dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("Explorer", dock_id_left_bottom);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 
@@ -87,12 +89,16 @@ void MyApp::Dockspace()
     coreDiagram->DrawLibrary();
     ImGui::End();
 
-    ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_None);
+    ImGui::Begin("Explorer", nullptr, ImGuiWindowFlags_None);
+    coreDiagram->DrawExplorer();
+    ImGui::End();
+
+    ImGui::Begin("Diagram", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
     coreDiagram->Update();
     ImGui::End();
 
     ImGui::Begin("Properties", nullptr, ImGuiWindowFlags_None);
-    ImGui::Text("Text");
+    coreDiagram->DrawProperties();
     ImGui::End();
 
     if (initialSetup == false)
@@ -110,7 +116,7 @@ void MyApp::Menu()
     {
         MenuFile();
         MenuView();
-        MenuAbout();
+        MenuHelp();
         ImGui::EndMenuBar();
     }
 }
@@ -119,39 +125,60 @@ void MyApp::MenuFile()
 {
     if (ImGui::BeginMenu("File"))
     {
-        if (ImGui::MenuItem("New", nullptr, false, true))
+        if (ImGui::MenuItem(u8"\ue873 New", nullptr, false, true))
         {
             if (GetAsterisk() == true)
             {
                 openSaveModal = true;
-                stateSaveModal = true;
+                stateSaveModal = 1;
             }
             else
             {
                 NewProject();
             }
         }
-        if (ImGui::MenuItem("Open", nullptr, false, true))
+        if (ImGui::MenuItem(u8"\ueaf3 Open", nullptr, false, true))
         {
             if (GetAsterisk() == true)
             {
                 openSaveModal = true;
-                stateSaveModal = false;
+                stateSaveModal = 2;
             }
             else
             {
                 OpenProject();
             }
         }
-        if (ImGui::MenuItem("Save", nullptr, false, true))
+        ImGui::Separator();
+        if (ImGui::MenuItem(u8"\ue161 Save", nullptr, false, true))
         {
             SaveProject();
         }
-        if (ImGui::MenuItem("Save As...", nullptr, false, true))
+        if (ImGui::MenuItem(u8"\ueb60 Save As...", nullptr, false, true))
         {
             SaveProject(true);
         }
+        ImGui::Separator();
+        if (ImGui::MenuItem(u8"\ue9ba Exit", nullptr, false, true))
+        {
+            attemptToClose = true;
+        }
         ImGui::EndMenu();
+    }
+
+    // Exit
+    if (attemptToClose == true) // Exit, Window X, alt+f4.
+    {
+        attemptToClose = false;
+        if (GetAsterisk() == true)
+        {
+            openSaveModal = true;
+            stateSaveModal = 3;
+        }
+        else
+        {
+            timeToClose = true;
+        }
     }
 }
 
@@ -159,7 +186,7 @@ void MyApp::MenuView()
 {
     if (ImGui::BeginMenu("View"))
     {
-        if (ImGui::MenuItem("Redock", nullptr, false, true))
+        if (ImGui::MenuItem(u8"\ue871 Redock", nullptr, false, true))
         {
             redock = true;
         }
@@ -167,11 +194,14 @@ void MyApp::MenuView()
     }
 }
 
-void MyApp::MenuAbout()
+void MyApp::MenuHelp()
 {
-    if (ImGui::BeginMenu("About"))
+    if (ImGui::BeginMenu("Help"))
     {
-        ImGui::MenuItem("https://github.com/onurae", nullptr, true, false);
+        if (ImGui::MenuItem(u8"\ue88e About", nullptr, false, true))
+        {
+            openAbout = true;
+        }
         ImGui::EndMenu();
     }
 }
@@ -229,7 +259,19 @@ void MyApp::DrawSaveModal()
         ImGui::SameLine();
         if (ImGui::Button("No", ImVec2(80, 0)))
         {
-            stateSaveModal == true ? NewProject() : OpenProject();
+            if (stateSaveModal == 1)
+            {
+                NewProject();
+            }
+            else if (stateSaveModal == 2)
+            {
+                OpenProject();
+            }
+            else if (stateSaveModal == 3)
+            {
+                timeToClose = true;
+            }
+            stateSaveModal = 0;
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
@@ -327,6 +369,11 @@ void MyApp::LoadFromFile()
 
 void MyApp::UndoRedoSave()
 {
+    if (ImGui::IsAnyItemActive() == true)
+    {
+        return;
+    }
+
     // If project modified, add doc. TODO: other modifications
     if (coreDiagram->GetModifFlag() == true)
     {
@@ -405,6 +452,30 @@ void MyApp::ResetDocDeque()
     iCurrentDoc = 0;
     iSavedDoc = 0;
     docs.emplace_back(CreateDoc());
+}
+
+void MyApp::DrawAbout()
+{
+    if (openAbout == true)
+    {
+        ImGui::OpenPopup("About");
+        openAbout = false;
+    }
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("About", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Separator();
+        ImGui::Text(u8"\ue90c 2023 OnurAKIN.");
+        ImGui::Text("All rights reserved.");
+        ImGui::Separator();
+        ImGui::Text(u8"\ue86f https://github.com/onurae");
+        ImGui::Separator();
+        if (ImGui::Button("OK", ImVec2(200, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 }
 
 void MyApp::TestBasic() const

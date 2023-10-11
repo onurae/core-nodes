@@ -224,6 +224,10 @@ void SaveFloat(pugi::xml_node& xmlNode, const std::string& name, float data)
 {
     xmlNode.append_child(name.c_str()).append_attribute("data").set_value(data);
 }
+void SaveDouble(pugi::xml_node& xmlNode, const std::string& name, double data)
+{
+    xmlNode.append_child(name.c_str()).append_attribute("data").set_value(data);
+}
 void SaveString(pugi::xml_node& xmlNode, const std::string& name, const std::string& str)
 {
     xmlNode.append_child(name.c_str()).append_attribute("data").set_value(str.c_str());
@@ -263,6 +267,11 @@ ImColor LoadImColor(const pugi::xml_node & xmlNode, const std::string & name)
 float LoadFloat(const pugi::xml_node & xmlNode, const std::string & name)
 {
     return xmlNode.child(name.c_str()).attribute("data").as_float();
+}
+
+double LoadDouble(const pugi::xml_node& xmlNode, const std::string& name)
+{
+    return xmlNode.child(name.c_str()).attribute("data").as_double();
 }
 
 std::string LoadString(const pugi::xml_node & xmlNode, const std::string & name)

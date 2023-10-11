@@ -10,7 +10,7 @@
 #ifndef COREDIAGRAM_HPP
 #define COREDIAGRAM_HPP
 
-#include "CoreNode.hpp"
+#include "CoreLibrary.hpp"
 #include <set>
 #include <cmath>
 
@@ -33,24 +33,35 @@ private:
     bool mNodeDrag = false; // For node drag modification.
     bool modifFlag = false; // Modification flag.
 
-    CoreNodeLib coreNodeLib;
+    CoreLibrary coreLib;
     State state = State::Default;
     float scale = 1.0f;
+    const float scaleMin = 0.10f;
+    const float scaleMax = 2.0f;
     ImVec2 position;
     ImVec2 size;
     ImVec2 scroll;
     ImVec2 mousePos;
     std::vector<CoreNode*> coreNodeVec;
+    std::vector<CoreNode*> exeOrder; // Execution order.
     CoreNode* highlightedNode = nullptr;
     void HighlightNode();
     std::string CreateUniqueName(const std::string& libName) const;
-    CoreNode* CreateCoreNode(const CoreNodeLib::Node* node, ImVec2 pos);
 
     // Update canvas
     ImRect rectCanvas;
     void UpdateCanvasRect();
+    const float deltaScale = 0.05f;
     void UpdateCanvasScrollZoom();
     void UpdateCanvasGrid(ImDrawList* drawList) const;
+    void FitToWindow();
+
+    // Dragging on canvas.
+    bool draggingOutOfCanvas = false;
+    ImVec2 distFromClickToCenter;
+    ImVec2 clickPosAtTheEdge;
+    void DragNodeSingle();
+    void DragNodeMulti();
     
     // Actions
     void Actions();
@@ -172,7 +183,9 @@ public:
     void Load(const pugi::xml_node & xmlNode);
     bool GetModifFlag() const { return modifFlag; }
     void ResetModifFlag() { modifFlag = false; }
-    void DrawLibrary() { coreNodeLib.Draw(); }
+    void DrawLibrary() { coreLib.Draw(); }
+    void DrawExplorer();
+    void DrawProperties();
 };
 
 #endif /* COREDIAGRAM_HPP */

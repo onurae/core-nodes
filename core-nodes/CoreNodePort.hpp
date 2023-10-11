@@ -12,7 +12,38 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <bitset>
-#include "CoreNodeLib.hpp"
+#include "FileDialog.hpp"
+
+const std::vector<std::string> portTypeNames
+{
+    "Generic",
+    "Int",
+    "Float",
+    "Double",
+    "Vector",
+    "Image",
+    "Text"
+};
+
+enum class PortDataType
+{
+    Generic,
+    Int,
+    Float,
+    Double,
+    Vector,
+    Image,
+    Text
+    // Warning! If you update this, update port type names vector.
+};
+
+enum class PortType
+{
+    None,   // None.
+    In,     // Input
+    Ic,     // Initial condition
+    Out     // Output
+};
 
 class FlagSet
 {
@@ -68,7 +99,7 @@ private:
     int targetLinkSep = 0;  // seperation coeff. of the linked output.
 public:
     CoreNodeInput() = default;
-    CoreNodeInput(const std::string& name, PortType type, PortDataType dataType, int order);
+    CoreNodeInput(const std::string& name, PortType type, PortDataType dataType);
     virtual ~CoreNodeInput() = default;
     void Save(pugi::xml_node& xmlNode) const;
     void Load(const pugi::xml_node& xmlNode);
@@ -77,6 +108,7 @@ public:
     PortType GetType() const { return type; };
     PortDataType GetDataType() const { return dataType; };
     int GetOrder() const { return order; }
+    void SetOrder(int i) { order = i; }
     ImVec2 GetPosition() const { return position; }
     ImRect GetRectPin() const { return rectPin; }
     ImRect GetRectPort() const { return rectPort; }
@@ -121,7 +153,7 @@ private:
     bool inverted = false;
 public:
     CoreNodeOutput() = default;
-    CoreNodeOutput(const std::string& name, PortType type, PortDataType dataType, int order);
+    CoreNodeOutput(const std::string& name, PortType type, PortDataType dataType);
     virtual ~CoreNodeOutput() = default;
     void Save(pugi::xml_node& xmlNode) const;
     void Load(const pugi::xml_node& xmlNode);
@@ -130,6 +162,7 @@ public:
     PortType GetType() const { return type; };
     PortDataType GetDataType() const { return dataType; };
     int GetOrder() const { return order; }
+    void SetOrder(int i) { order = i; }
     ImVec2 GetPosition() const { return position; }
     ImRect GetRectPin() const { return rectPin; }
     ImRect GetRectPort() const { return rectPort; }

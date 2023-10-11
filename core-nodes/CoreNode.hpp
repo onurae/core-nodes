@@ -24,12 +24,19 @@ struct NodeFlag
     static const unsigned int Highlighted = 1 << 5;
 };
 
+enum class NodeType
+{
+    None = 0,
+    Generic, // TODO change to core module?
+    CoreIn, // maybe
+    CoreOut // maybe
+};
+
 class CoreNode
 {
 private:
-    int id;
     std::string name;
-    std::string libName; // TODO canvasta node kopyalarken ise yarar.
+    std::string libName;
     NodeType type;
     ImColor colorNode;
     ImColor colorHead;
@@ -50,14 +57,35 @@ private:
     ImVec2 leftPortPos;
     ImVec2 rightPortPos;
     bool portInverted = false;
+    float inputsWidth = 0.0f;
+    float inputsHeight = 0.0f;
+    float outputsWidth = 0.0f;
+    float outputsHeight = 0.0f;
+    std::string nameEdited;
+
+protected:
+    void AddInput(CoreNodeInput& input);
+    void AddOutput(CoreNodeOutput& output);
+    void BuildGeometry();
+    virtual void SaveProperties(pugi::xml_node& xmlNode) = 0;
+    virtual void LoadProperties(pugi::xml_node& xmlNode) = 0;
+    bool modifFlag = false;
+
+    static bool IsNameUnique(std::string_view str, const std::vector<CoreNode*>& coreNodeVec);
+    void EditName(const std::vector<CoreNode*>& coreNodeVec);
+    bool editingName = false;
+
 public:
     CoreNode() = default;
-    CoreNode(int id, const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
+    CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode);
     virtual ~CoreNode() = default;
-    void Save(pugi::xml_node& xmlNode) const;
+    void Save(pugi::xml_node& xmlNode);
     void Load(const pugi::xml_node& xmlNode);
+    bool GetModifFlag() const { return modifFlag; }
+    void ResetModifFlag() { modifFlag = false; }
 
     std::string GetName() const { return name; }
+    std::string GetLibName() const { return libName; }
     NodeType GetType() const { return type; };
     FlagSet& GetFlagSet() { return flagSet; }
     const FlagSet& GetFlagSet() const { return flagSet; }
@@ -68,11 +96,43 @@ public:
     std::vector<CoreNodeInput>& GetInputVec() { return inputVec; }
     const std::vector<CoreNodeInput>& GetInputVec() const { return inputVec; }
     std::vector<CoreNodeOutput>& GetOutputVec() { return outputVec; }
-    void BuildGeometry(float inputsWidth, float inputsHeight, float outputsWidth, float outputsHeight);
+
     void Translate(ImVec2 delta, bool selectedOnly = false);
     void Draw(ImDrawList* drawList, ImVec2 offset, float scale) const;
     void InvertPort();
     bool IsPortInverted() const { return portInverted; }
+
+    virtual void Build() = 0;
+    virtual void DrawProperties(const std::vector<CoreNode*>& coreNodeVec) = 0;
+};
+
+class NodeParamDouble
+{
+private:
+    std::string name;
+    bool edit = false;
+    double data;
+
+public:
+    explicit NodeParamDouble(const std::string& name, double v) : name(name), data(v) {}
+    virtual ~NodeParamDouble() = default;
+    double Get() const { return data; }
+    void Set(double v) { data = v; }
+    void Draw(bool& modifFlag, double step = 0.0, double stepFast = 0.0)
+    {
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(name.c_str());
+        ImGui::SameLine(100.0f);
+        ImGui::SetNextItemWidth(140.0f);
+        ImGui::PushStyleColor(ImGuiCol_Text, edit ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
+        if (ImGui::InputDouble("##NodeParamDouble", &data, step, stepFast, "%.15g", ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            edit = false;
+            modifFlag = true;
+        }
+        edit = ImGui::IsItemActive() ? true : false;
+        ImGui::PopStyleColor(1);
+    }
 };
 
 #endif /* CORENODE_HPP */

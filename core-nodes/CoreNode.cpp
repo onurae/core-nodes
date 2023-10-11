@@ -9,12 +9,25 @@
 
 #include "CoreNode.hpp"
 
-CoreNode::CoreNode(int id, const std::string& name, const std::string& libName, NodeType type, ImColor colorNode) : id(id), name(name), libName(libName), type(type), colorNode(colorNode)
+void CoreNode::AddInput(CoreNodeInput& input)
+{
+    inputsWidth = ImMax(inputsWidth, input.GetRectPort().GetWidth());
+    inputsHeight += input.GetRectPort().GetHeight();
+    input.SetOrder(static_cast<int>(inputVec.size()));
+    inputVec.push_back(input);
+}
+
+void CoreNode::AddOutput(CoreNodeOutput& output)
+{
+    outputsWidth = ImMax(outputsWidth, output.GetRectPort().GetWidth());
+    outputsHeight += output.GetRectPort().GetHeight();
+    output.SetOrder(static_cast<int>(outputVec.size()));
+    outputVec.push_back(output);
+}
+
+CoreNode::CoreNode(const std::string& name, const std::string& libName, NodeType type, ImColor colorNode) : name(name), libName(libName), type(type), colorNode(colorNode), nameEdited(name)
 {
     flagSet.SetFlag(NodeFlag::Default);
-    rectName.Min = ImVec2(0.0f, 0.0f);
-    rectName.Max = ImGui::CalcTextSize(name.c_str());
-    titleHeight = kTitleHeight * rectName.GetHeight();
 
     colorHead.Value.x = colorNode.Value.x * 0.5f;
     colorHead.Value.y = colorNode.Value.y * 0.5f;
@@ -24,11 +37,10 @@ CoreNode::CoreNode(int id, const std::string& name, const std::string& libName, 
     colorBody = ImColor(0.0f, 0.0f, 0.0f, 0.75f);
 }
 
-void CoreNode::Save(pugi::xml_node& xmlNode) const
+void CoreNode::Save(pugi::xml_node& xmlNode)
 {
     auto node = xmlNode.append_child("node");
     node.append_attribute("name") = name.c_str();
-    SaveInt(node, "id", id);
     SaveString(node, "libName", libName);
     SaveInt(node, "type", (int)type);
     SaveImColor(node, "colorNode", colorNode);
@@ -54,11 +66,16 @@ void CoreNode::Save(pugi::xml_node& xmlNode) const
     SaveImVec2(node, "leftPortPos", leftPortPos);
     SaveImVec2(node, "rightPortPos", rightPortPos);
     SaveBool(node, "portInverted", portInverted);
+    SaveFloat(node, "inputsWidth", inputsWidth);
+    SaveFloat(node, "inputsHeight", inputsHeight);
+    SaveFloat(node, "outputsWidth", outputsWidth);
+    SaveFloat(node, "outputsHeight", outputsHeight);
+
+    SaveProperties(node.append_child("properties"));
 }
 
 void CoreNode::Load(const pugi::xml_node& xmlNode)
 {
-    id = LoadInt(xmlNode, "id");
     name = xmlNode.attribute("name").as_string();
     libName = LoadString(xmlNode, "libName");
     type = (NodeType)LoadInt(xmlNode, "type");
@@ -67,7 +84,6 @@ void CoreNode::Load(const pugi::xml_node& xmlNode)
     colorLine = LoadImColor(xmlNode, "colorLine");
     colorBody = LoadImColor(xmlNode, "colorBody");
     flagSet.SetInt(LoadInt(xmlNode, "flagSet"));
-    flagSet.UnsetFlag(NodeFlag::Highlighted);   // Unset highlighted flag.
     flagSet.UnsetFlag(NodeFlag::Hovered);       // Unset hovered flag.
     rectNode = LoadImRect(xmlNode, "rectNode");
     rectNodeTitle = LoadImRect(xmlNode, "rectNodeTitle");
@@ -87,6 +103,52 @@ void CoreNode::Load(const pugi::xml_node& xmlNode)
     leftPortPos = LoadImVec2(xmlNode, "leftPortPos");
     rightPortPos = LoadImVec2(xmlNode, "rightPortPos");
     portInverted = LoadBool(xmlNode, "portInverted");
+    inputsWidth = LoadFloat(xmlNode, "inputsWidth");
+    inputsHeight = LoadFloat(xmlNode, "inputsHeight");
+    outputsWidth = LoadFloat(xmlNode, "outputsWidth");
+    outputsHeight = LoadFloat(xmlNode, "outputsHeight");
+    nameEdited = name;
+
+    LoadProperties(xmlNode.child("properties"));
+}
+
+bool CoreNode::IsNameUnique(std::string_view str, const std::vector<CoreNode*>& coreNodeVec)
+{
+    for (auto n : coreNodeVec)
+    {
+        if (n->GetName() == str)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void CoreNode::EditName(const std::vector<CoreNode*>& coreNodeVec)
+{
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("name");
+    ImGui::SameLine(100.0f);
+    ImGui::SetNextItemWidth(140.0f);
+    ImGui::PushStyleColor(ImGuiCol_Text, editingName ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
+    if (ImGui::InputText("##EditName", &nameEdited, ImGuiInputTextFlags_EnterReturnsTrue)) // ImGuiInputTextFlags_CharsNoBlank
+    {
+        if (IsNameUnique(nameEdited, coreNodeVec) == true)
+        {
+            name = nameEdited;
+            auto loc = rectNode.Min;
+            BuildGeometry();
+            Translate(loc);
+            modifFlag = true;
+        }
+        else if (nameEdited != name)
+        {
+            Notifier::Add(Notif(Notif::Type::ERROR, "The name \"" + nameEdited + "\"" + " already exists!", "Enter a unique name.", 5.0f));
+            nameEdited = name;
+        }
+    }
+    editingName = ImGui::IsItemActive() ? true : false;
+    ImGui::PopStyleColor(1);
 }
 
 void CoreNode::Translate(ImVec2 delta, bool selectedOnly)
@@ -134,8 +196,12 @@ void CoreNode::InvertPort()
     }
 }
 
-void CoreNode::BuildGeometry(float inputsWidth, float inputsHeight, float outputsWidth, float outputsHeight)
+void CoreNode::BuildGeometry()
 {
+    rectName.Min = ImVec2(0.0f, 0.0f);
+    rectName.Max = ImGui::CalcTextSize(name.c_str());
+    titleHeight = kTitleHeight * rectName.GetHeight();
+
     bodyHeight = ImMax(inputsHeight, outputsHeight) + kVerticalTop * rectName.GetHeight() + kVerticalBottom * rectName.GetHeight();
     rectNode.Min = ImVec2(0.0f, 0.0f);
     rectNode.Max.x = ImMax(inputsWidth + outputsWidth + kHorizontal * rectName.GetHeight(), rectName.GetWidth() + kHorizontal * rectName.GetHeight());
