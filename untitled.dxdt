@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<core-nodes version="v0.1.0">
+  <simulation solver="1" sampleTime="0.01" stopTime="5" speed="realTime" />
+  <diagram>
+    <scale data="0.900000036" />
+    <scroll x="31.8999939" y="60.4072266" />
+    <hNode data="" />
+    <exeList>
+      <node name="Gain" />
+      <node name="Test" />
+      <node name="Test1" />
+      <node name="Test2" />
+      <node name="Gain2" />
+      <node name="Gain1" />
+      <node name="Test3" />
+    </exeList>
+    <nodeList>
+      <node name="Test1">
+        <libName data="Test" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="742.299988" xMax="891.699951" yMin="94.6000061" yMax="219.400009" />
+        <rectNodeTitle xMin="742.299988" xMax="891.699951" yMin="94.6000061" yMax="123.400009" />
+        <rectName xMin="801" xMax="833" yMin="101" yMax="117" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="96" />
+        <inputList>
+          <input name="Input1">
+            <position x="742.299988" y="141.400009" />
+            <ref data="16" />
+            <rectName xMin="751.099976" xMax="786.099976" yMin="133.400009" yMax="149.400009" />
+            <rectPin xMin="733.5" xMax="751.099976" yMin="131.400009" yMax="151.400009" />
+            <rectPort xMin="733.5" xMax="790.099976" yMin="131.400009" yMax="151.400009" />
+            <type data="1" />
+            <dataType data="2" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input2">
+            <position x="742.299988" y="161.400009" />
+            <ref data="16" />
+            <rectName xMin="751.099976" xMax="786.099976" yMin="153.400009" yMax="169.400009" />
+            <rectPin xMin="733.5" xMax="751.099976" yMin="151.400009" yMax="171.400009" />
+            <rectPort xMin="733.5" xMax="790.099976" yMin="151.400009" yMax="171.400009" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input3">
+            <position x="742.299988" y="181.400009" />
+            <ref data="16" />
+            <rectName xMin="751.099976" xMax="786.099976" yMin="173.400009" yMax="189.400009" />
+            <rectPin xMin="733.5" xMax="751.099976" yMin="171.400009" yMax="191.400009" />
+            <rectPort xMin="733.5" xMax="790.099976" yMin="171.400009" yMax="191.400009" />
+            <type data="1" />
+            <dataType data="1" />
+            <order data="2" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input4">
+            <position x="742.299988" y="201.400009" />
+            <ref data="16" />
+            <rectName xMin="751.099976" xMax="786.099976" yMin="193.400009" yMax="209.400009" />
+            <rectPin xMin="733.5" xMax="751.099976" yMin="191.400009" yMax="211.400009" />
+            <rectPort xMin="733.5" xMax="790.099976" yMin="191.400009" yMax="211.400009" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="3" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output1">
+            <position x="891.699951" y="141.400009" />
+            <ref data="16" />
+            <rectName xMin="838.899963" xMax="882.899963" yMin="133.400009" yMax="149.400009" />
+            <rectPin xMin="882.899963" xMax="900.5" yMin="131.400009" yMax="151.400009" />
+            <rectPort xMin="834.899963" xMax="900.5" yMin="131.400009" yMax="151.400009" />
+            <type data="3" />
+            <dataType data="1" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="false" />
+          </output>
+          <output name="Output2">
+            <position x="891.699951" y="161.400009" />
+            <ref data="16" />
+            <rectName xMin="838.899963" xMax="882.899963" yMin="153.400009" yMax="169.400009" />
+            <rectPin xMin="882.899963" xMax="900.5" yMin="151.400009" yMax="171.400009" />
+            <rectPort xMin="834.899963" xMax="900.5" yMin="151.400009" yMax="171.400009" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="false" />
+          </output>
+          <output name="Output3">
+            <position x="891.699951" y="181.400009" />
+            <ref data="16" />
+            <rectName xMin="838.899963" xMax="882.899963" yMin="173.400009" yMax="189.400009" />
+            <rectPin xMin="882.899963" xMax="900.5" yMin="171.400009" yMax="191.400009" />
+            <rectPort xMin="834.899963" xMax="900.5" yMin="171.400009" yMax="191.400009" />
+            <type data="3" />
+            <dataType data="0" />
+            <order data="2" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="false" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="116.800003" />
+        <rightPortPos x="149.399994" y="96.8000031" />
+        <portInverted data="false" />
+        <inputsWidth data="56.5999985" />
+        <inputsHeight data="80" />
+        <outputsWidth data="65.5999985" />
+        <outputsHeight data="60" />
+        <properties>
+          <parameter1 data="1.234" />
+          <parameter2 data="1.234" />
+        </properties>
+      </node>
+      <node name="Test2">
+        <libName data="Test" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="354.299988" xMax="503.699951" yMin="460.600006" yMax="585.400024" />
+        <rectNodeTitle xMin="354.299988" xMax="503.699951" yMin="460.600006" yMax="489.400024" />
+        <rectName xMin="413" xMax="445" yMin="467" yMax="483" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="96" />
+        <inputList>
+          <input name="Input1">
+            <position x="503.699951" y="507.400024" />
+            <ref data="16" />
+            <rectName xMin="459.900024" xMax="494.900024" yMin="499.400024" yMax="515.400024" />
+            <rectPin xMin="494.900024" xMax="512.5" yMin="497.400024" yMax="517.400024" />
+            <rectPort xMin="455.900024" xMax="512.5" yMin="497.400024" yMax="517.400024" />
+            <type data="1" />
+            <dataType data="2" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="true" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input2">
+            <position x="503.699951" y="527.400024" />
+            <ref data="16" />
+            <rectName xMin="459.900024" xMax="494.900024" yMin="519.400024" yMax="535.400024" />
+            <rectPin xMin="494.900024" xMax="512.5" yMin="517.400024" yMax="537.400024" />
+            <rectPort xMin="455.900024" xMax="512.5" yMin="517.400024" yMax="537.400024" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <inverted data="true" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="1" />
+            <targetLinkSep data="1" />
+          </input>
+          <input name="Input3">
+            <position x="503.699951" y="547.400024" />
+            <ref data="16" />
+            <rectName xMin="459.900024" xMax="494.900024" yMin="539.400024" yMax="555.400024" />
+            <rectPin xMin="494.900024" xMax="512.5" yMin="537.400024" yMax="557.400024" />
+            <rectPort xMin="455.900024" xMax="512.5" yMin="537.400024" yMax="557.400024" />
+            <type data="1" />
+            <dataType data="1" />
+            <order data="2" />
+            <flagSet data="0" />
+            <inverted data="true" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="1" />
+            <targetLinkSep data="1" />
+          </input>
+          <input name="Input4">
+            <position x="503.699951" y="567.400024" />
+            <ref data="16" />
+            <rectName xMin="459.900024" xMax="494.900024" yMin="559.400024" yMax="575.400024" />
+            <rectPin xMin="494.900024" xMax="512.5" yMin="557.400024" yMax="577.400024" />
+            <rectPort xMin="455.900024" xMax="512.5" yMin="557.400024" yMax="577.400024" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="3" />
+            <flagSet data="0" />
+            <inverted data="true" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="1" />
+            <targetLinkSep data="1" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output1">
+            <position x="354.299957" y="507.400024" />
+            <ref data="16" />
+            <rectName xMin="363.100006" xMax="407.099976" yMin="499.400024" yMax="515.400024" />
+            <rectPin xMin="345.499969" xMax="363.100006" yMin="497.400024" yMax="517.400024" />
+            <rectPort xMin="345.499969" xMax="411.099976" yMin="497.400024" yMax="517.400024" />
+            <type data="3" />
+            <dataType data="1" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="true" />
+          </output>
+          <output name="Output2">
+            <position x="354.299957" y="527.400024" />
+            <ref data="16" />
+            <rectName xMin="363.100006" xMax="407.099976" yMin="519.400024" yMax="535.400024" />
+            <rectPin xMin="345.499969" xMax="363.100006" yMin="517.400024" yMax="537.400024" />
+            <rectPort xMin="345.499969" xMax="411.099976" yMin="517.400024" yMax="537.400024" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="true" />
+          </output>
+          <output name="Output3">
+            <position x="354.299957" y="547.400024" />
+            <ref data="16" />
+            <rectName xMin="363.100006" xMax="407.099976" yMin="539.400024" yMax="555.400024" />
+            <rectPin xMin="345.499969" xMax="363.100006" yMin="537.400024" yMax="557.400024" />
+            <rectPort xMin="345.499969" xMax="411.099976" yMin="537.400024" yMax="557.400024" />
+            <type data="3" />
+            <dataType data="0" />
+            <order data="2" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="true" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="116.800003" />
+        <rightPortPos x="149.399994" y="96.8000031" />
+        <portInverted data="true" />
+        <inputsWidth data="56.5999985" />
+        <inputsHeight data="80" />
+        <outputsWidth data="65.5999985" />
+        <outputsHeight data="60" />
+        <properties>
+          <parameter1 data="1.234" />
+          <parameter2 data="1.234" />
+        </properties>
+      </node>
+      <node name="Gain2">
+        <libName data="Gain" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="156.300003" xMax="291.700012" yMin="388.600006" yMax="453.400024" />
+        <rectNodeTitle xMin="156.300003" xMax="291.700012" yMin="388.600006" yMax="417.399994" />
+        <rectName xMin="208" xMax="240" yMin="395" yMax="411" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="36" />
+        <inputList>
+          <input name="Input">
+            <position x="291.700012" y="435.399994" />
+            <ref data="16" />
+            <rectName xMin="254.899994" xMax="282.899994" yMin="427.399994" yMax="443.399994" />
+            <rectPin xMin="282.899994" xMax="300.5" yMin="425.399994" yMax="445.399994" />
+            <rectPort xMin="250.899994" xMax="300.5" yMin="425.399994" yMax="445.399994" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="true" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output">
+            <position x="156.300018" y="435.399994" />
+            <ref data="16" />
+            <rectName xMin="165.100006" xMax="202.100006" yMin="427.399994" yMax="443.399994" />
+            <rectPin xMin="147.5" xMax="165.100006" yMin="425.399994" yMax="445.399994" />
+            <rectPort xMin="147.5" xMax="206.100006" yMin="425.399994" yMax="445.399994" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="true" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="56.7999992" />
+        <rightPortPos x="135.399994" y="56.7999992" />
+        <portInverted data="true" />
+        <inputsWidth data="49.5999985" />
+        <inputsHeight data="20" />
+        <outputsWidth data="58.5999985" />
+        <outputsHeight data="20" />
+        <properties>
+          <gain data="23.300000000000001" />
+        </properties>
+      </node>
+      <node name="Gain">
+        <libName data="Gain" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="174.966583" xMax="310.366547" yMin="178.822174" yMax="243.622192" />
+        <rectNodeTitle xMin="174.966583" xMax="310.366547" yMin="178.822174" yMax="207.622192" />
+        <rectName xMin="230.166595" xMax="255.166595" yMin="185.222168" yMax="201.222168" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="36" />
+        <inputList>
+          <input name="Input">
+            <position x="174.966583" y="225.622162" />
+            <ref data="16" />
+            <rectName xMin="183.766571" xMax="211.766571" yMin="217.622162" yMax="233.622162" />
+            <rectPin xMin="166.166595" xMax="183.766571" yMin="215.622162" yMax="235.622162" />
+            <rectPort xMin="166.166595" xMax="215.766571" yMin="215.622162" yMax="235.622162" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="-1" />
+            <targetLinkSep data="1" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output">
+            <position x="310.366547" y="225.622162" />
+            <ref data="16" />
+            <rectName xMin="264.566559" xMax="301.566559" yMin="217.622162" yMax="233.622162" />
+            <rectPin xMin="301.566559" xMax="319.166595" yMin="215.622162" yMax="235.622162" />
+            <rectPort xMin="260.566559" xMax="319.166595" yMin="215.622162" yMax="235.622162" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="2" />
+            <inverted data="false" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="56.7999992" />
+        <rightPortPos x="135.399994" y="56.7999992" />
+        <portInverted data="false" />
+        <inputsWidth data="49.5999985" />
+        <inputsHeight data="20" />
+        <outputsWidth data="58.5999985" />
+        <outputsHeight data="20" />
+        <properties>
+          <gain data="1" />
+        </properties>
+      </node>
+      <node name="Test">
+        <libName data="Test" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="417.581146" xMax="566.980652" yMin="246.390823" yMax="371.190948" />
+        <rectNodeTitle xMin="417.581146" xMax="566.980652" yMin="246.390823" yMax="275.190948" />
+        <rectName xMin="479.78067" xMax="504.78067" yMin="252.790833" yMax="268.790924" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="96" />
+        <inputList>
+          <input name="Input1">
+            <position x="417.581146" y="293.190948" />
+            <ref data="16" />
+            <rectName xMin="426.381073" xMax="461.380737" yMin="285.190948" yMax="301.190948" />
+            <rectPin xMin="408.781158" xMax="426.381073" yMin="283.190948" yMax="303.190948" />
+            <rectPort xMin="408.781158" xMax="465.380676" yMin="283.190948" yMax="303.190948" />
+            <type data="1" />
+            <dataType data="2" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input2">
+            <position x="417.581146" y="313.190948" />
+            <ref data="16" />
+            <rectName xMin="426.381073" xMax="461.380737" yMin="305.190948" yMax="321.190948" />
+            <rectPin xMin="408.781158" xMax="426.381073" yMin="303.190948" yMax="323.190948" />
+            <rectPort xMin="408.781158" xMax="465.380676" yMin="303.190948" yMax="323.190948" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input3">
+            <position x="417.581146" y="333.190948" />
+            <ref data="16" />
+            <rectName xMin="426.381073" xMax="461.380737" yMin="325.190948" yMax="341.190948" />
+            <rectPin xMin="408.781158" xMax="426.381073" yMin="323.190948" yMax="343.190948" />
+            <rectPort xMin="408.781158" xMax="465.380676" yMin="323.190948" yMax="343.190948" />
+            <type data="1" />
+            <dataType data="1" />
+            <order data="2" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input4">
+            <position x="417.581146" y="353.190948" />
+            <ref data="16" />
+            <rectName xMin="426.381073" xMax="461.380737" yMin="345.190948" yMax="361.190948" />
+            <rectPin xMin="408.781158" xMax="426.381073" yMin="343.190948" yMax="363.190948" />
+            <rectPort xMin="408.781158" xMax="465.380676" yMin="343.190948" yMax="363.190948" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="3" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output1">
+            <position x="566.980652" y="293.190948" />
+            <ref data="16" />
+            <rectName xMin="514.180664" xMax="558.180664" yMin="285.190948" yMax="301.190948" />
+            <rectPin xMin="558.180664" xMax="575.780701" yMin="283.190948" yMax="303.190948" />
+            <rectPort xMin="510.180634" xMax="575.780701" yMin="283.190948" yMax="303.190948" />
+            <type data="3" />
+            <dataType data="1" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="false" />
+          </output>
+          <output name="Output2">
+            <position x="566.980652" y="313.190948" />
+            <ref data="16" />
+            <rectName xMin="514.180664" xMax="558.180664" yMin="305.190948" yMax="321.190948" />
+            <rectPin xMin="558.180664" xMax="575.780701" yMin="303.190948" yMax="323.190948" />
+            <rectPort xMin="510.180634" xMax="575.780701" yMin="303.190948" yMax="323.190948" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="false" />
+          </output>
+          <output name="Output3">
+            <position x="566.980652" y="333.190948" />
+            <ref data="16" />
+            <rectName xMin="514.180664" xMax="558.180664" yMin="325.190948" yMax="341.190948" />
+            <rectPin xMin="558.180664" xMax="575.780701" yMin="323.190948" yMax="343.190948" />
+            <rectPort xMin="510.180634" xMax="575.780701" yMin="323.190948" yMax="343.190948" />
+            <type data="3" />
+            <dataType data="0" />
+            <order data="2" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="false" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="116.800003" />
+        <rightPortPos x="149.399994" y="96.8000031" />
+        <portInverted data="false" />
+        <inputsWidth data="56.5999985" />
+        <inputsHeight data="80" />
+        <outputsWidth data="65.5999985" />
+        <outputsHeight data="60" />
+        <properties>
+          <parameter1 data="25.199999999999999" />
+          <parameter2 data="1.234" />
+        </properties>
+      </node>
+      <node name="Test3">
+        <libName data="Test" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="657.63324" xMax="807.033203" yMin="292.703064" yMax="417.503052" />
+        <rectNodeTitle xMin="657.63324" xMax="807.033203" yMin="292.703064" yMax="321.503052" />
+        <rectName xMin="716.333252" xMax="748.333252" yMin="299.103058" yMax="315.103058" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="96" />
+        <inputList>
+          <input name="Input1">
+            <position x="657.63324" y="339.503052" />
+            <ref data="16" />
+            <rectName xMin="666.433228" xMax="701.433228" yMin="331.503052" yMax="347.503052" />
+            <rectPin xMin="648.833252" xMax="666.433228" yMin="329.503052" yMax="349.503052" />
+            <rectPort xMin="648.833252" xMax="705.433228" yMin="329.503052" yMax="349.503052" />
+            <type data="1" />
+            <dataType data="2" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input2">
+            <position x="657.63324" y="359.503052" />
+            <ref data="16" />
+            <rectName xMin="666.433228" xMax="701.433228" yMin="351.503052" yMax="367.503052" />
+            <rectPin xMin="648.833252" xMax="666.433228" yMin="349.503052" yMax="369.503052" />
+            <rectPort xMin="648.833252" xMax="705.433228" yMin="349.503052" yMax="369.503052" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input3">
+            <position x="657.63324" y="379.503052" />
+            <ref data="16" />
+            <rectName xMin="666.433228" xMax="701.433228" yMin="371.503052" yMax="387.503052" />
+            <rectPin xMin="648.833252" xMax="666.433228" yMin="369.503052" yMax="389.503052" />
+            <rectPort xMin="648.833252" xMax="705.433228" yMin="369.503052" yMax="389.503052" />
+            <type data="1" />
+            <dataType data="1" />
+            <order data="2" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+          <input name="Input4">
+            <position x="657.63324" y="399.503052" />
+            <ref data="16" />
+            <rectName xMin="666.433228" xMax="701.433228" yMin="391.503052" yMax="407.503052" />
+            <rectPin xMin="648.833252" xMax="666.433228" yMin="389.503052" yMax="409.503052" />
+            <rectPort xMin="648.833252" xMax="705.433228" yMin="389.503052" yMax="409.503052" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="3" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output1">
+            <position x="807.033203" y="339.503052" />
+            <ref data="16" />
+            <rectName xMin="754.233215" xMax="798.233215" yMin="331.503052" yMax="347.503052" />
+            <rectPin xMin="798.233215" xMax="815.833252" yMin="329.503052" yMax="349.503052" />
+            <rectPort xMin="750.233215" xMax="815.833252" yMin="329.503052" yMax="349.503052" />
+            <type data="3" />
+            <dataType data="1" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="1" />
+            <inverted data="false" />
+          </output>
+          <output name="Output2">
+            <position x="807.033203" y="359.503052" />
+            <ref data="16" />
+            <rectName xMin="754.233215" xMax="798.233215" yMin="351.503052" yMax="367.503052" />
+            <rectPin xMin="798.233215" xMax="815.833252" yMin="349.503052" yMax="369.503052" />
+            <rectPort xMin="750.233215" xMax="815.833252" yMin="349.503052" yMax="369.503052" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="1" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="false" />
+          </output>
+          <output name="Output3">
+            <position x="807.033203" y="379.503052" />
+            <ref data="16" />
+            <rectName xMin="754.233215" xMax="798.233215" yMin="371.503052" yMax="387.503052" />
+            <rectPin xMin="798.233215" xMax="815.833252" yMin="369.503052" yMax="389.503052" />
+            <rectPort xMin="750.233215" xMax="815.833252" yMin="369.503052" yMax="389.503052" />
+            <type data="3" />
+            <dataType data="0" />
+            <order data="2" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="false" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="116.800003" />
+        <rightPortPos x="149.399994" y="96.8000031" />
+        <portInverted data="false" />
+        <inputsWidth data="56.5999985" />
+        <inputsHeight data="80" />
+        <outputsWidth data="65.5999985" />
+        <outputsHeight data="60" />
+        <properties>
+          <parameter1 data="1.234" />
+          <parameter2 data="1.234" />
+        </properties>
+      </node>
+      <node name="Gain1">
+        <libName data="Gain" />
+        <type data="1" />
+        <colorNode x="0.200000003" y="0.300000012" z="0.600000024" w="0" />
+        <colorHead x="0.100000001" y="0.150000006" z="0.300000012" w="1" />
+        <colorLine x="0.416000009" y="0.0160000008" z="0.0590000004" w="0.75" />
+        <colorBody x="0" y="0" z="0" w="0.75" />
+        <flagSet data="1" />
+        <rectNode xMin="424.027985" xMax="559.428711" yMin="72.7158508" yMax="137.515823" />
+        <rectNodeTitle xMin="424.027985" xMax="559.428711" yMin="72.7158508" yMax="101.515747" />
+        <rectName xMin="475.727875" xMax="507.728149" yMin="79.1158447" yMax="95.1157837" />
+        <titleHeight data="28.7999992" />
+        <bodyHeight data="36" />
+        <inputList>
+          <input name="Input">
+            <position x="424.027985" y="119.515823" />
+            <ref data="16" />
+            <rectName xMin="432.827911" xMax="460.827667" yMin="111.515739" yMax="127.515816" />
+            <rectPin xMin="415.228027" xMax="432.827911" yMin="109.515747" yMax="129.515808" />
+            <rectPort xMin="415.228027" xMax="464.827881" yMin="109.515747" yMax="129.515808" />
+            <type data="1" />
+            <dataType data="3" />
+            <order data="0" />
+            <flagSet data="0" />
+            <inverted data="false" />
+            <linkDir data="0" />
+            <linkSepX data="0" />
+            <linkSepY data="0" />
+            <targetLinkDir data="0" />
+            <targetLinkSep data="0" />
+          </input>
+        </inputList>
+        <outputList>
+          <output name="Output">
+            <position x="559.428711" y="119.515823" />
+            <ref data="16" />
+            <rectName xMin="513.628296" xMax="550.628479" yMin="111.515739" yMax="127.515816" />
+            <rectPin xMin="550.628479" xMax="568.228882" yMin="109.515747" yMax="129.515808" />
+            <rectPort xMin="509.628174" xMax="568.228882" yMin="109.515747" yMax="129.515808" />
+            <type data="3" />
+            <dataType data="3" />
+            <order data="0" />
+            <flagSet data="0" />
+            <linkNum data="0" />
+            <inverted data="false" />
+          </output>
+        </outputList>
+        <leftPortPos x="0" y="56.7999992" />
+        <rightPortPos x="135.399994" y="56.7999992" />
+        <portInverted data="false" />
+        <inputsWidth data="49.5999985" />
+        <inputsHeight data="20" />
+        <outputsWidth data="58.5999985" />
+        <outputsHeight data="20" />
+        <properties>
+          <gain data="1" />
+        </properties>
+      </node>
+    </nodeList>
+    <linkList>
+      <link>
+        <inputNode data="Test" />
+        <outputNode data="Gain" />
+        <inputPort data="1" />
+        <outputPort data="0" />
+        <type data="15" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Test1" />
+        <outputNode data="Test" />
+        <inputPort data="2" />
+        <outputPort data="0" />
+        <type data="15" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Test2" />
+        <outputNode data="Test1" />
+        <inputPort data="1" />
+        <outputPort data="2" />
+        <type data="8" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Gain2" />
+        <outputNode data="Test2" />
+        <inputPort data="0" />
+        <outputPort data="1" />
+        <type data="1" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Gain" />
+        <outputNode data="Gain2" />
+        <inputPort data="0" />
+        <outputPort data="0" />
+        <type data="10" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Gain1" />
+        <outputNode data="Gain" />
+        <inputPort data="0" />
+        <outputPort data="0" />
+        <type data="15" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18.0000553" />
+        <xSepOut data="18.0000553" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Test2" />
+        <outputNode data="Test" />
+        <inputPort data="3" />
+        <outputPort data="2" />
+        <type data="8" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Test3" />
+        <outputNode data="Test" />
+        <inputPort data="1" />
+        <outputPort data="1" />
+        <type data="15" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+      <link>
+        <inputNode data="Test2" />
+        <outputNode data="Test3" />
+        <inputPort data="2" />
+        <outputPort data="0" />
+        <type data="8" />
+        <color x="1" y="1" z="1" w="1" />
+        <thickness data="1.80000007" />
+        <xSepIn data="18" />
+        <xSepOut data="18" />
+        <ykSep data="0" />
+      </link>
+    </linkList>
+  </diagram>
+</core-nodes>
