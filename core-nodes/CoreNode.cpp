@@ -138,6 +138,18 @@ void CoreNode::EditName(const std::vector<CoreNode*>& coreNodeVec)
             name = nameEdited;
             auto loc = rectNode.Min;
             BuildGeometry();
+            if (portInverted == true)
+            {
+                auto delta = rightPortPos.x - leftPortPos.x;
+                for (auto& input : inputVec)
+                {
+                    input.Translate(ImVec2(delta, 0.0f));
+                }
+                for (auto& output : outputVec)
+                {
+                    output.Translate(ImVec2(-delta, 0.0f));
+                }
+            }
             Translate(loc);
             modifFlag = true;
         }
