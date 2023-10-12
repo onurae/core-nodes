@@ -125,7 +125,7 @@ public:
         ImGui::SameLine(100.0f);
         ImGui::SetNextItemWidth(140.0f);
         ImGui::PushStyleColor(ImGuiCol_Text, edit ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
-        if (ImGui::InputDouble("##NodeParamDouble", &data, step, stepFast, "%.15g", ImGuiInputTextFlags_EnterReturnsTrue))
+        if (ImGui::InputDouble(std::string("##" + name).c_str(), &data, step, stepFast, "%.15g", ImGuiInputTextFlags_EnterReturnsTrue))
         {
             edit = false;
             modifFlag = true;

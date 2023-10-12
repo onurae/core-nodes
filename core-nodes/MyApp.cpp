@@ -466,7 +466,7 @@ void MyApp::DrawAbout()
     {
         ImGui::Separator();
         ImGui::Text(u8"\ue90c 2023 OnurAKIN.");
-        ImGui::Text("All rights reserved.");
+        ImGui::Text("Licensed under the MIT License.");
         ImGui::Separator();
         ImGui::Text(u8"\ue86f https://github.com/onurae");
         ImGui::Separator();

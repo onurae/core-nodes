@@ -131,7 +131,7 @@ void CoreNode::EditName(const std::vector<CoreNode*>& coreNodeVec)
     ImGui::SameLine(100.0f);
     ImGui::SetNextItemWidth(140.0f);
     ImGui::PushStyleColor(ImGuiCol_Text, editingName ? ImVec4(0.992f, 0.914f, 0.169f, 1.0f) : ImGuiStyle().Colors[ImGuiCol_Text]);
-    if (ImGui::InputText("##EditName", &nameEdited, ImGuiInputTextFlags_EnterReturnsTrue)) // ImGuiInputTextFlags_CharsNoBlank
+    if (ImGui::InputText(std::string("##" + name).c_str(), &nameEdited, ImGuiInputTextFlags_EnterReturnsTrue)) // ImGuiInputTextFlags_CharsNoBlank
     {
         if (IsNameUnique(nameEdited, coreNodeVec) == true)
         {

@@ -27,12 +27,6 @@ void CoreLibrary::Draw()
     DrawTooltip();
 
     int id = 0; // Branch id.
-    if (ImGui::TreeNode("DynDx"))
-    {
-        DrawBranch("Test1", id, libMath);
-        DrawBranch("Test2", id, libMath);
-        ImGui::TreePop();
-    }
     if (ImGui::TreeNode("Nested"))
     {
         if (ImGui::TreeNode("Other"))
