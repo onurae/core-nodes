@@ -22,7 +22,7 @@ public:
     void DrawProperties(const std::vector<CoreNode*>& coreNodeVec) override;
 
     void SaveProperties(pugi::xml_node& xmlNode) override;
-    void LoadProperties(pugi::xml_node& xmlNode) override;
+    void LoadProperties(const pugi::xml_node& xmlNode) override;
 private:
     NodeParamDouble gain{"gain", 1.0};
 };

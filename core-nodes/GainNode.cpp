@@ -33,7 +33,7 @@ void GainNode::SaveProperties(pugi::xml_node& xmlNode)
     SaveDouble(xmlNode, "gain", gain.Get());
 }
 
-void GainNode::LoadProperties(pugi::xml_node& xmlNode)
+void GainNode::LoadProperties(const pugi::xml_node& xmlNode)
 {
     gain.Set(LoadDouble(xmlNode, "gain"));
 }

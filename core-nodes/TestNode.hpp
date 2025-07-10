@@ -22,7 +22,7 @@ public:
     void DrawProperties(const std::vector<CoreNode*>& coreNodeVec) override;
 
     void SaveProperties(pugi::xml_node& xmlNode) override;
-    void LoadProperties(pugi::xml_node& xmlNode) override;
+    void LoadProperties(const pugi::xml_node& xmlNode) override;
 private:
     NodeParamDouble parameter1{ "parameter1", 1.234 };
     NodeParamDouble parameter2{ "parameter2", 1.234 };

@@ -9,7 +9,7 @@
 
 #include "CoreNode.hpp"
 
-void CoreNode::AddInput(CoreNodeInput& input)
+void CoreNode::AddInput(CoreNodeInput input)
 {
     inputsWidth = ImMax(inputsWidth, input.GetRectPort().GetWidth());
     inputsHeight += input.GetRectPort().GetHeight();
@@ -17,7 +17,7 @@ void CoreNode::AddInput(CoreNodeInput& input)
     inputVec.push_back(input);
 }
 
-void CoreNode::AddOutput(CoreNodeOutput& output)
+void CoreNode::AddOutput(CoreNodeOutput output)
 {
     outputsWidth = ImMax(outputsWidth, output.GetRectPort().GetWidth());
     outputsHeight += output.GetRectPort().GetHeight();
@@ -71,7 +71,8 @@ void CoreNode::Save(pugi::xml_node& xmlNode)
     SaveFloat(node, "outputsWidth", outputsWidth);
     SaveFloat(node, "outputsHeight", outputsHeight);
 
-    SaveProperties(node.append_child("properties"));
+    node.append_child("properties");
+    SaveProperties(node);
 }
 
 void CoreNode::Load(const pugi::xml_node& xmlNode)
@@ -109,7 +110,8 @@ void CoreNode::Load(const pugi::xml_node& xmlNode)
     outputsHeight = LoadFloat(xmlNode, "outputsHeight");
     nameEdited = name;
 
-    LoadProperties(xmlNode.child("properties"));
+    xmlNode.child("properties");
+    LoadProperties(xmlNode);
 }
 
 bool CoreNode::IsNameUnique(std::string_view str, const std::vector<CoreNode*>& coreNodeVec)

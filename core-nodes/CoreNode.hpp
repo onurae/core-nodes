@@ -64,11 +64,11 @@ private:
     std::string nameEdited;
 
 protected:
-    void AddInput(CoreNodeInput& input);
-    void AddOutput(CoreNodeOutput& output);
+    void AddInput(CoreNodeInput input);
+    void AddOutput(CoreNodeOutput output);
     void BuildGeometry();
     virtual void SaveProperties(pugi::xml_node& xmlNode) = 0;
-    virtual void LoadProperties(pugi::xml_node& xmlNode) = 0;
+    virtual void LoadProperties(const pugi::xml_node& xmlNode) = 0;
     bool modifFlag = false;
 
     static bool IsNameUnique(std::string_view str, const std::vector<CoreNode*>& coreNodeVec);

@@ -40,7 +40,7 @@ void TestNode::SaveProperties(pugi::xml_node& xmlNode)
     SaveDouble(xmlNode, "parameter2", parameter2.Get());
 }
 
-void TestNode::LoadProperties(pugi::xml_node& xmlNode)
+void TestNode::LoadProperties(const pugi::xml_node& xmlNode)
 {
     parameter1.Set(LoadDouble(xmlNode, "parameter1"));
     parameter2.Set(LoadDouble(xmlNode, "parameter2"));

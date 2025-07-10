@@ -24,9 +24,9 @@ void MyApp::Update()
 
 void MyApp::SelectTab(const char* windowName) const
 {
-    ImGuiWindow* window = ImGui::FindWindowByName(windowName);
-    if (window == nullptr || window->DockNode == nullptr || window->DockNode->TabBar == nullptr) { return; }
-    window->DockNode->TabBar->NextSelectedTabId = window->TabId;
+    ImGuiWindow* imGuiWindow = ImGui::FindWindowByName(windowName);
+    if (imGuiWindow == nullptr || imGuiWindow->DockNode == nullptr || imGuiWindow->DockNode->TabBar == nullptr) { return; }
+    imGuiWindow->DockNode->TabBar->NextSelectedTabId = imGuiWindow->TabId;
 }
 
 MyApp::MyApp() : GuiApp("MyApp")
